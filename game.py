@@ -24,7 +24,7 @@ def calc_heal():
     health_points = roll_dice(8)
     luck = roll_dice(10)
     if luck == 10:
-        print("God loves you")
+        game_state.get("game_log").append("God loves you")
         health_points = health_points * 2
     return health_points
 
@@ -58,7 +58,7 @@ game_state["active_monster_pack"] = game_state["monster_packs"][game_state["acti
 def switch_to_next_monster_pack():
     game_state["active_monster_pack_index"] += 1
     game_state["active_monster_pack"] = game_state["monster_packs"][game_state["active_monster_pack_index"]]
-    game_state.get("game_log").append("new monsters arrived")
+    game_state.get("game_log").append("\nNew monsters arrived\n")
 
 
 def pack_is_dead():
@@ -78,11 +78,11 @@ def all_packs_are_dead():
 
 def use_heal():
     health_points = calc_heal()
-    print("Healing", health_points)
+    game_state.get("game_log").append(f"Healing {health_points}")
     game_state["hero_hp"] = game_state["hero_hp"] + health_points
     if game_state["hero_hp"] >= game_state["hero_max_hp"]:
         game_state["hero_hp"] = game_state["hero_max_hp"]
-        print("You have max HP")
+        game_state.get("game_log").append("Healed to max HP")
 
 
 def attack_first_alive_monster():
@@ -163,4 +163,4 @@ def monster_pack_attack():
             attack_hero()
 
 
-screen = Screen(hero_attack, monster_pack_attack, game_state)
+screen = Screen(hero_attack, use_heal, game_state)

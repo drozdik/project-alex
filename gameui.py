@@ -5,10 +5,10 @@ from PIL import ImageTk, Image
 
 class Screen:
 
-    def __init__(self, hero_attack, monster_pack_attack, game_state):
+    def __init__(self, hero_attack, use_heal, game_state):
         self.hero_attack = hero_attack
         self.game_state = game_state
-        self.monster_pack_attack = monster_pack_attack
+        self.use_heal = use_heal
         root = Tk()
         root.title("Diablo dnd edition")
 
@@ -34,19 +34,26 @@ class Screen:
         self.monster_2_panel = Label(text=f"Health: {game_state['active_monster_pack'][1]}")
         self.monster_2_panel.grid(row=1, column=2)
 
-        b_hero_attack = Button(text="Hero attack", command=self.on_hero_attack)
+        b_hero_attack = Button(text="Attack and finish turn", command=self.on_hero_attack)
         b_hero_attack.grid(row=2, column=0, columnspan=1)
+
+        b_hero_heal = Button(text="Heal", command=self.on_hero_heal)
+        b_hero_heal.grid(row=3, column=0, columnspan=1)
 
         log_content = ""
         for log in game_state.get("game_log"):
             log_content = log + "\n"
         self.log_panel = Label(text=log_content)
-        self.log_panel.grid(row=3, column=0, columnspan=3)
+        self.log_panel.grid(row=4, column=0, columnspan=3)
 
         root.mainloop()
 
     def on_hero_attack(self):
         self.hero_attack()  # calls action from the Game
+        self.redraw_panels()
+
+    def on_hero_heal(self):
+        self.use_heal()
         self.redraw_panels()
 
     def redraw_panels(self):
@@ -69,4 +76,4 @@ class Screen:
 
         self.log_panel.forget()
         self.log_panel = Label(text=log_content)
-        self.log_panel.grid(row=3, column=0, columnspan=3)
+        self.log_panel.grid(row=4, column=0, columnspan=3)

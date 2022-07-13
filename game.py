@@ -49,7 +49,9 @@ game_state = {
     "monster_packs": [[30, 20], [30, 30]],
     "active_monster_pack_index": 0,
     "active_monster_pack": None,
-    "game_log": []
+    "game_log": [],
+    "hero_dead": False,
+    "monsters_dead": False
 }
 
 game_state["active_monster_pack"] = game_state["monster_packs"][game_state["active_monster_pack_index"]]
@@ -74,6 +76,10 @@ def hero_is_dead():
 
 def all_packs_are_dead():
     return game_state["active_monster_pack_index"] == len(game_state["monster_packs"])
+
+
+def last_pack_active():
+    return game_state["active_monster_pack_index"] == len(game_state["monster_packs"]) - 1
 
 
 def use_heal():
@@ -152,15 +158,39 @@ def hero_turn():
 
 def hero_attack():
     attack_first_alive_monster()
-    if pack_is_dead() and not all_packs_are_dead():
+    if pack_is_dead():
+        if last_pack_active():
+            game_state["monsters_dead"] = True
+            return
         switch_to_next_monster_pack()
     monster_pack_attack()
 
 
 def monster_pack_attack():
     for monster_hp in game_state["active_monster_pack"]:
-        if monster_hp > 0 and not hero_is_dead():
+        if monster_hp > 0:
             attack_hero()
+            if hero_is_dead():
+                game_state["hero_dead"] = True
+                return
 
 
-screen = Screen(hero_attack, use_heal, game_state)
+def game_restart():
+    game_state.update({
+        # "min_damage": 1,
+        # "max_damage": 15,
+        # "turn": 1,
+        "hero_max_hp": 20,
+        "hero_hp": 20,
+        # "hero_armor": 10,
+        "monster_packs": [[30, 20], [30, 30]],
+        "active_monster_pack_index": 0,
+        "active_monster_pack": None,
+        "game_log": [],
+        "hero_dead": False,
+        "monsters_dead": False
+    })
+    game_state["active_monster_pack"] = game_state["monster_packs"][game_state["active_monster_pack_index"]]
+
+
+screen = Screen(hero_attack, use_heal, game_state, game_restart)

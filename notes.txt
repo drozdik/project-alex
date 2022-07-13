@@ -1,8 +1,10 @@
 done - remove monster turn button, make monster pack turn each time after hero turn (ends) automatically
 done - add 'log panel' to UI and show (most of) print statement in the panel
 done - add heal button, heal logs into log panel
+done - refactor all panels and buttons into frame
+done - game over if hero HP zero or less
+done - fix error when last monster pack is dead
 
 backlog:
-- fix error when last monster pack is dead
-- game over if hero HP zero or less
 - add scroll to log panel, such that new log appears at bottom and log automatically scrolled to bottom
+- different game over message on hero or monsters are dead

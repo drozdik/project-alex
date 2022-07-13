@@ -8,10 +8,10 @@ def calc_damage(min_damage, max_damage):
     luck = roll_dice(20)
     if luck == 10:
         damage = damage * 2
-        print("critical damage")
+        game_state.get("game_log").append("Critical damage")
     if luck == 1:
         damage = min_damage
-        print("critical miss")
+        game_state.get("game_log").append("Critical miss")
     return damage
 
 
@@ -49,6 +49,7 @@ game_state = {
     "monster_packs": [[30, 20], [30, 30]],
     "active_monster_pack_index": 0,
     "active_monster_pack": None,
+    "game_log": []
 }
 
 game_state["active_monster_pack"] = game_state["monster_packs"][game_state["active_monster_pack_index"]]
@@ -57,6 +58,7 @@ game_state["active_monster_pack"] = game_state["monster_packs"][game_state["acti
 def switch_to_next_monster_pack():
     game_state["active_monster_pack_index"] += 1
     game_state["active_monster_pack"] = game_state["monster_packs"][game_state["active_monster_pack_index"]]
+    game_state.get("game_log").append("new monsters arrived")
 
 
 def pack_is_dead():
@@ -85,23 +87,22 @@ def use_heal():
 
 def attack_first_alive_monster():
     damage = calc_damage(min_damage, max_damage)
-    print("You hit ", damage, "damage")
-    print("Current monster pack hp is ", game_state["active_monster_pack"])
+    hero_damage_log = f"You hit {damage} damage"
+    game_state.get("game_log").append(hero_damage_log)
     for index, monster_hp in enumerate(game_state["active_monster_pack"]):
         if monster_hp > 0:
             game_state["active_monster_pack"][index] = monster_hp - damage
-            print("After hit", game_state["active_monster_pack"])
             break
 
 
 def attack_hero():
     damage = calc_damage(1, 15)
-    # print(monster_hp, "Monster hit ", damage, "damage")
     if damage <= hero_armor:
-        print("All damage absorbed")
+        game_state.get("game_log").append(f"Monster hit {damage} damage, all absorbed")
     else:
-        game_state["hero_hp"] = game_state["hero_hp"] - (damage - hero_armor)
-    print("Current Hero hp is ", game_state["hero_hp"])
+        effective_damage = (damage - hero_armor)
+        game_state["hero_hp"] = game_state["hero_hp"] - effective_damage
+        game_state.get("game_log").append(f"Monster hit {damage} damage, {effective_damage} passes armor")
 
 
 def ask_for_hero_action():

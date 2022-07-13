@@ -153,6 +153,7 @@ def hero_attack():
     attack_first_alive_monster()
     if pack_is_dead() and not all_packs_are_dead():
         switch_to_next_monster_pack()
+    monster_pack_attack()
 
 
 def monster_pack_attack():

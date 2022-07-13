@@ -1,0 +1,1 @@
+done - remove monster turn button, make monster pack turn each time after hero turn (ends) automatically

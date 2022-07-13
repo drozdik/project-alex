@@ -40,17 +40,10 @@ class Screen:
         b_hero_attack = Button(text="Hero attack", command=self.on_hero_attack)
         b_hero_attack.grid(row=3, column=0, columnspan=1)
 
-        b_monster_pack_attack = Button(text="Monster pack attack", command=self.on_monster_pack_attack)
-        b_monster_pack_attack.grid(row=3, column=1, columnspan=1)
-
         root.mainloop()
 
     def on_hero_attack(self):
         self.hero_attack()  # calls action from the Game
-        self.redraw_hero_and_monster_pack_panels()
-
-    def on_monster_pack_attack(self):
-        self.monster_pack_attack()
         self.redraw_hero_and_monster_pack_panels()
 
     def redraw_hero_and_monster_pack_panels(self):

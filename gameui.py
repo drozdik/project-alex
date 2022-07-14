@@ -116,7 +116,7 @@ class Screen:
             self.frame.destroy()
             self.frame = tkinter.Frame(self.root)
             self.frame.grid()
-            l_game_over = Label(self.frame, text="Hero is dead. Game Over.")
+            l_game_over = Label(self.frame, text="Monsters are dead. Game Over.")
             l_game_over.grid(row=0, column=0, columnspan=1)
             b_quite = Button(self.frame, text="Quit", command=self.quit)
             b_quite.grid(row=1, column=0, columnspan=1)

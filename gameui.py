@@ -122,8 +122,14 @@ class Screen:
                                 text=f"Class: Knight\nHealth: {self.game_state.get('hero_hp')}/{self.game_state.get('hero_max_hp')}")
         self.hero_panel.grid(row=1, column=0)
 
-        self.monster_1_panel = Label(self.frame, text=f"Health: {self.game_state['active_monster_pack'][0]}")
+        monster1 = self.game_state['active_monster_pack'][0] # it's dictionary now
+        monster1_name = monster1["name"]
+        monster1_hp = monster1["hp"]
+        self.monster_1_panel = Label(self.frame, text=f"{monster1_name} health: {monster1_hp}")
         self.monster_1_panel.grid(row=1, column=1)
 
-        self.monster_2_panel = Label(self.frame, text=f"Health: {self.game_state['active_monster_pack'][1]}")
+        monster2 = self.game_state['active_monster_pack'][1] # it's dictionary now
+        monster2_name = monster2["name"]
+        monster2_hp = monster2["hp"]
+        self.monster_2_panel = Label(self.frame, text=f"{monster2_name} health: {monster2_hp}")
         self.monster_2_panel.grid(row=1, column=2)

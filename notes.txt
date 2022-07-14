@@ -5,6 +5,6 @@ done - refactor all panels and buttons into frame
 done - game over if hero HP zero or less
 done - fix error when last monster pack is dead
 done - add scroll to log panel, such that new log appears at bottom and log automatically scrolled to bottom
+done - different game over message on hero or monsters are dead
 
 backlog:
-- different game over message on hero or monsters are dead

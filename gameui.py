@@ -2,6 +2,7 @@ import tkinter
 from tkinter import *
 
 from PIL import ImageTk, Image
+from tkinter.scrolledtext import ScrolledText
 
 
 class Screen:
@@ -48,8 +49,12 @@ class Screen:
         log_content = ""
         for log in game_state.get("game_log"):
             log_content = log + "\n"
-        self.log_panel = Label(self.frame, text=log_content)
+
+        self.log_panel = ScrolledText(self.frame, width=50,  height=10)
         self.log_panel.grid(row=4, column=0, columnspan=3)
+        self.log_panel.insert(INSERT, log_content)
+        self.log_panel.configure(state ='disabled')
+        self.log_panel.see("end")
 
         self.root.mainloop()
 
@@ -137,5 +142,8 @@ class Screen:
             log_content = log_content + log + "\n"
 
         self.log_panel.forget()
-        self.log_panel = Label(self.frame, text=log_content)
+        self.log_panel = ScrolledText(self.frame, width=50,  height=10)
         self.log_panel.grid(row=4, column=0, columnspan=3)
+        self.log_panel.insert(INSERT, log_content)
+        self.log_panel.configure(state ='disabled')
+        self.log_panel.see("end")

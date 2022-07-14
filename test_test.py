@@ -1,15 +1,32 @@
-ddict = {"a": 0}
-ddict["a"] = 3
-
-class B:
-    def __init__(self, my_d):
-        self.my_d = my_d
-
-    def print_me(self):
-        print(self.my_d["a"])
+import tkinter as tk
+from tkinter.scrolledtext import ScrolledText
 
 
-b = B(ddict)
-b.print_me()
-ddict["a"] = 5
-b.print_me()
+root = tk.Tk()
+root.title("ScrolledText Widget")
+
+test = """
+asdfasdfasdf
+asdf
+asdfasdf
+asdfasdf
+asdfadf
+asdfasfd
+
+asdfasdf
+
+asdfasdf
+
+asdfasdf
+adfa
+sdfasd
+fadf
+asdf
+"""
+st = ScrolledText(root, width=50,  height=10)
+st.pack(fill=tk.BOTH, side=tk.LEFT, expand=True)
+st.insert(tk.INSERT, test)
+st.configure(state ='disabled')
+st.see("end")
+
+root.mainloop()

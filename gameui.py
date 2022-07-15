@@ -8,8 +8,10 @@ from tkinter.scrolledtext import ScrolledText
 class Screen:
 
     def __init__(self, hero_attack, use_heal, game_state, game_restart):
-        self.hero_attack = hero_attack
+        # state
         self.game_state = game_state
+        # hook functions
+        self.hero_attack = hero_attack
         self.use_heal = use_heal
         self.game_restart = game_restart
         # init root with title
@@ -19,11 +21,11 @@ class Screen:
         self.frame = tkinter.Frame(self.root)
         self.frame.grid()
         # create images
-        self.k_image = ImageTk.PhotoImage(Image.open("images/knight.png"))
-        self.s_image = ImageTk.PhotoImage(Image.open("images/skeleton.png"))
-        self.s_image_2 = ImageTk.PhotoImage(Image.open("images/skeleton.png"))
+        self.knight_image = ImageTk.PhotoImage(Image.open("images/knight.png"))
+        self.skeleton_image = ImageTk.PhotoImage(Image.open("images/skeleton.png"))
+        self.skeleton_mage_image = ImageTk.PhotoImage(Image.open("images/skeleton-mage.png"))
 
-        self.draw_static_components()
+        self.draw_images_and_buttons()
         self.draw_health_panels()
         self.draw_log_panel()
 
@@ -66,22 +68,21 @@ class Screen:
         self.redraw_panels(True)
 
     # images and buttons
-    def draw_static_components(self):
-        k_label = Label(self.frame, image=self.k_image)
-        k_label.grid(row=0, column=0, columnspan=1)
+    def draw_images_and_buttons(self):
+        knight_image_label = Label(self.frame, image=self.knight_image)
+        knight_image_label.grid(row=0, column=0, columnspan=1)
 
-        s_label = Label(self.frame, image=self.s_image)
-        s_label.grid(row=0, column=1, columnspan=1)
+        sekeleton_image_label = Label(self.frame, image=self.skeleton_image)
+        sekeleton_image_label.grid(row=0, column=1, columnspan=1)
 
-        s_label_2 = Label(self.frame, image=self.s_image_2)
-        s_label_2.grid(row=0, column=2, columnspan=1)
+        skeleton_mage_image = Label(self.frame, image=self.skeleton_mage_image)
+        skeleton_mage_image.grid(row=0, column=2, columnspan=1)
 
-        b_hero_attack = Button(self.frame, text="Attack and finish turn", command=self.on_hero_attack)
-        b_hero_attack.grid(row=2, column=0, columnspan=1)
+        hero_attack_button = Button(self.frame, text="Attack and finish turn", command=self.on_hero_attack)
+        hero_attack_button.grid(row=2, column=0, columnspan=1)
 
-        b_hero_heal = Button(self.frame, text="Heal", command=self.on_hero_heal)
-        b_hero_heal.grid(row=3, column=0, columnspan=1)
-        print("redraw panels")
+        hero_heal_button = Button(self.frame, text="Heal", command=self.on_hero_heal)
+        hero_heal_button.grid(row=3, column=0, columnspan=1)
 
     def draw_game_over_components(self, text="Game Over."):
         l_game_over = Label(self.frame, text=text)
@@ -98,7 +99,7 @@ class Screen:
 
     def redraw_panels(self, with_static=False):
         if with_static:
-            self.draw_static_components()
+            self.draw_images_and_buttons()
         if self.game_state.get("hero_dead"):
             self.destroy_frame()
             self.draw_game_over_components("Hero is dead. Game Over.")
@@ -109,27 +110,27 @@ class Screen:
             return
 
         # forget health panels
-        self.hero_panel.forget()
-        self.monster_1_panel.forget()
-        self.monster_2_panel.forget()
+        self.hero_health_label.grid_forget()
+        self.monster_1_health_label.grid_forget()
+        self.monster_2_health_label.grid_forget()
         self.draw_health_panels()
 
-        self.log_panel.forget()
+        self.log_panel.grid_forget()
         self.draw_log_panel()
 
     def draw_health_panels(self):
-        self.hero_panel = Label(self.frame,
+        self.hero_health_label = Label(self.frame,
                                 text=f"Class: Knight\nHealth: {self.game_state.get('hero_hp')}/{self.game_state.get('hero_max_hp')}")
-        self.hero_panel.grid(row=1, column=0)
+        self.hero_health_label.grid(row=1, column=0)
 
         monster1 = self.game_state['active_monster_pack'][0] # it's dictionary now
         monster1_name = monster1["name"]
         monster1_hp = monster1["hp"]
-        self.monster_1_panel = Label(self.frame, text=f"{monster1_name} health: {monster1_hp}")
-        self.monster_1_panel.grid(row=1, column=1)
+        self.monster_1_health_label = Label(self.frame, text=f"{monster1_name} health: {monster1_hp}")
+        self.monster_1_health_label.grid(row=1, column=1)
 
         monster2 = self.game_state['active_monster_pack'][1] # it's dictionary now
         monster2_name = monster2["name"]
         monster2_hp = monster2["hp"]
-        self.monster_2_panel = Label(self.frame, text=f"{monster2_name} health: {monster2_hp}")
-        self.monster_2_panel.grid(row=1, column=2)
+        self.monster_2_health_label = Label(self.frame, text=f"{monster2_name} health: {monster2_hp}")
+        self.monster_2_health_label.grid(row=1, column=2)

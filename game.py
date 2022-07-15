@@ -38,6 +38,27 @@ hero_armor = 10
 # monster_packs = [[30, 20], [30, 30]]
 # active_monster_pack_index = 0
 # active_monster_pack = monster_packs[active_monster_pack_index]
+skeleton1 = {
+    "max_hp" : 30,
+    "hp" : 30,
+    "name" : "Skeleton",
+}
+skeleton2 = {
+    "max_hp" : 30,
+    "hp" : 30,
+    "name" : "Skeleton",
+}
+skeleton3 = {
+    "max_hp" : 30,
+    "hp" : 30,
+    "name" : "Skeleton",
+}
+skeleton_mage = {
+    "max_hp" : 20,
+    "hp" : 20,
+    "name" : "Skeleton-mage",
+
+}
 
 game_state = {
     # "min_damage": 1,
@@ -46,7 +67,7 @@ game_state = {
     "hero_max_hp": 20,
     "hero_hp": 20,
     # "hero_armor": 10,
-    "monster_packs": [[30, 20], [30, 30]],
+    "monster_packs": [[skeleton1, skeleton_mage], [skeleton2, skeleton3]],
     "active_monster_pack_index": 0,
     "active_monster_pack": None,
     "game_log": [],
@@ -64,8 +85,8 @@ def switch_to_next_monster_pack():
 
 
 def pack_is_dead():
-    for monster_hp in game_state["active_monster_pack"]:
-        if monster_hp > 0:
+    for monster in game_state["active_monster_pack"]:
+        if monster["hp"] > 0:
             return False
     return True
 
@@ -95,9 +116,9 @@ def attack_first_alive_monster():
     damage = calc_damage(min_damage, max_damage)
     hero_damage_log = f"You hit {damage} damage"
     game_state.get("game_log").append(hero_damage_log)
-    for index, monster_hp in enumerate(game_state["active_monster_pack"]):
-        if monster_hp > 0:
-            game_state["active_monster_pack"][index] = monster_hp - damage
+    for monster in game_state["active_monster_pack"]:
+        if monster["hp"] > 0:
+            monster["hp"] = monster["hp"] - damage
             break
 
 
@@ -167,8 +188,8 @@ def hero_attack():
 
 
 def monster_pack_attack():
-    for monster_hp in game_state["active_monster_pack"]:
-        if monster_hp > 0:
+    for monster in game_state["active_monster_pack"]:
+        if monster["hp"] > 0:
             attack_hero()
             if hero_is_dead():
                 game_state["hero_dead"] = True
@@ -183,7 +204,7 @@ def game_restart():
         "hero_max_hp": 20,
         "hero_hp": 20,
         # "hero_armor": 10,
-        "monster_packs": [[30, 20], [30, 30]],
+        "monster_packs": [[skeleton1, skeleton_mage], [skeleton2, skeleton3]],
         "active_monster_pack_index": 0,
         "active_monster_pack": None,
         "game_log": [],

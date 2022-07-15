@@ -1,32 +1,29 @@
-import tkinter as tk
-from tkinter.scrolledtext import ScrolledText
+a = {
+    "monsters":[{"hp": 30},{"hp": 20}]
+}
+ms = a["monsters"]
+m1 = ms[0]
+m2 = ms[1]
+m1hp = m1["hp"]
+m2hp = m2["hp"]
+m1hp = ms[0]["hp"]
+m2hp = ms[1]["hp"]
 
 
-root = tk.Tk()
-root.title("ScrolledText Widget")
+m1hp = m1["hp"]
 
-test = """
-asdfasdfasdf
-asdf
-asdfasdf
-asdfasdf
-asdfadf
-asdfasfd
+print(a)
+print(m1hp)
+#m1hp = m1hp - 5
 
-asdfasdf
+#m1["hp"] = m1["hp"] - 5
+ms[0]["hp"] = 25
+a["monsters"][0]["hp"] = 13
 
-asdfasdf
+print(a)
+print(m1)
 
-asdfasdf
-adfa
-sdfasd
-fadf
-asdf
-"""
-st = ScrolledText(root, width=50,  height=10)
-st.pack(fill=tk.BOTH, side=tk.LEFT, expand=True)
-st.insert(tk.INSERT, test)
-st.configure(state ='disabled')
-st.see("end")
 
-root.mainloop()
+
+
+#print(a["monsters"{"hp"}])

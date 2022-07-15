@@ -105,7 +105,7 @@ class Screen:
         self.frame = tkinter.Frame(self.root)
         self.frame.grid()
 
-    def redraw_panels(self, with_static=False):
+    def redraw_panels(self, with_static=True):
         if with_static:
             self.draw_images_and_buttons()
         if self.game_state.get("hero_dead"):

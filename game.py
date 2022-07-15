@@ -28,6 +28,19 @@ def calc_heal():
         health_points = health_points * 2
     return health_points
 
+def new_skeleton():
+    return {
+    "max_hp" : 30,
+    "hp" : 30,
+    "name" : "Skeleton",
+    }
+
+def new_skeleton_mage():
+    return {
+    "max_hp" : 20,
+    "hp" : 20,
+    "name" : "Skeleton-mage",
+    }
 
 min_damage = 1
 max_damage = 15
@@ -38,27 +51,6 @@ hero_armor = 10
 # monster_packs = [[30, 20], [30, 30]]
 # active_monster_pack_index = 0
 # active_monster_pack = monster_packs[active_monster_pack_index]
-skeleton1 = {
-    "max_hp" : 30,
-    "hp" : 30,
-    "name" : "Skeleton",
-}
-skeleton2 = {
-    "max_hp" : 30,
-    "hp" : 30,
-    "name" : "Skeleton",
-}
-skeleton3 = {
-    "max_hp" : 30,
-    "hp" : 30,
-    "name" : "Skeleton",
-}
-skeleton_mage = {
-    "max_hp" : 20,
-    "hp" : 20,
-    "name" : "Skeleton-mage",
-
-}
 
 game_state = {
     # "min_damage": 1,
@@ -67,7 +59,7 @@ game_state = {
     "hero_max_hp": 20,
     "hero_hp": 20,
     # "hero_armor": 10,
-    "monster_packs": [[skeleton1, skeleton_mage], [skeleton2, skeleton3]],
+    "monster_packs": [[new_skeleton(), new_skeleton_mage()], [new_skeleton(), new_skeleton()]],
     "active_monster_pack_index": 0,
     "active_monster_pack": None,
     "game_log": [],
@@ -204,7 +196,7 @@ def game_restart():
         "hero_max_hp": 20,
         "hero_hp": 20,
         # "hero_armor": 10,
-        "monster_packs": [[skeleton1, skeleton_mage], [skeleton2, skeleton3]],
+        "monster_packs": [[new_skeleton(), new_skeleton_mage()], [new_skeleton(), new_skeleton()]],
         "active_monster_pack_index": 0,
         "active_monster_pack": None,
         "game_log": [],

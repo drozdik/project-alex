@@ -37,8 +37,8 @@ def new_skeleton():
 
 def new_skeleton_mage():
     return {
-    "max_hp" : 20,
-    "hp" : 20,
+    "max_hp" : 35,
+    "hp" : 35,
     "name" : "Skeleton-mage",
     }
 
@@ -59,7 +59,7 @@ game_state = {
     "hero_max_hp": 20,
     "hero_hp": 20,
     # "hero_armor": 10,
-    "monster_packs": [[new_skeleton(), new_skeleton_mage()], [new_skeleton(), new_skeleton()]],
+    "monster_packs": [[new_skeleton(), new_skeleton()], [new_skeleton(), new_skeleton_mage()]],
     "active_monster_pack_index": 0,
     "active_monster_pack": None,
     "game_log": [],
@@ -196,7 +196,7 @@ def game_restart():
         "hero_max_hp": 20,
         "hero_hp": 20,
         # "hero_armor": 10,
-        "monster_packs": [[new_skeleton(), new_skeleton_mage()], [new_skeleton(), new_skeleton()]],
+        "monster_packs": [[new_skeleton(), new_skeleton()], [new_skeleton(), new_skeleton_mage()]],
         "active_monster_pack_index": 0,
         "active_monster_pack": None,
         "game_log": [],

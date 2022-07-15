@@ -72,11 +72,19 @@ class Screen:
         knight_image_label = Label(self.frame, image=self.knight_image)
         knight_image_label.grid(row=0, column=0, columnspan=1)
 
-        sekeleton_image_label = Label(self.frame, image=self.skeleton_image)
-        sekeleton_image_label.grid(row=0, column=1, columnspan=1)
+        monster1_image = self.skeleton_image
+        if self.game_state["active_monster_pack"][0]["name"] == "Skeleton-mage":
+            print("monster is mage")
+            monster1_image = self.skeleton_mage_image
+        monster1_image_label = Label(self.frame, image=monster1_image)
+        monster1_image_label.grid(row=0, column=1, columnspan=1)
 
-        skeleton_mage_image = Label(self.frame, image=self.skeleton_mage_image)
-        skeleton_mage_image.grid(row=0, column=2, columnspan=1)
+        monster2_image = self.skeleton_image
+        if self.game_state["active_monster_pack"][1]["name"] == "Skeleton-mage":
+            print("monster is mage")
+            monster2_image = self.skeleton_mage_image
+        monster2_image_label = Label(self.frame, image=monster2_image)
+        monster2_image_label.grid(row=0, column=2, columnspan=1)
 
         hero_attack_button = Button(self.frame, text="Attack and finish turn", command=self.on_hero_attack)
         hero_attack_button.grid(row=2, column=0, columnspan=1)

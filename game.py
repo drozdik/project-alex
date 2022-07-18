@@ -42,23 +42,39 @@ skeleton1 = {
     "max_hp" : 30,
     "hp" : 30,
     "name" : "Skeleton",
+    "min_damage" : 3,
+    "max_damage" : 15
 }
 skeleton2 = {
     "max_hp" : 30,
     "hp" : 30,
     "name" : "Skeleton",
+    "min_damage" : 3,
+    "max_damage" : 15
 }
 skeleton3 = {
     "max_hp" : 30,
     "hp" : 30,
     "name" : "Skeleton",
+    "min_damage" : 3,
+    "max_damage" : 15
 }
 skeleton_mage = {
     "max_hp" : 20,
     "hp" : 20,
     "name" : "Skeleton-mage",
+    "min_damage" : 5,
+    "max_damage" : 14
 
 }
+skeleton_lich ={
+    "max_hp" : 60,
+    "hp" : 60,
+    "name": "Skeleton-Lich",
+    "min_damage" : 10,
+    "max_damage" : 20
+}
+
 
 game_state = {
     # "min_damage": 1,
@@ -67,7 +83,7 @@ game_state = {
     "hero_max_hp": 20,
     "hero_hp": 20,
     # "hero_armor": 10,
-    "monster_packs": [[skeleton1, skeleton_mage], [skeleton2, skeleton3]],
+    "monster_packs": [[skeleton1, skeleton_mage], [skeleton2, skeleton3],[skeleton_lich]],
     "active_monster_pack_index": 0,
     "active_monster_pack": None,
     "game_log": [],
@@ -122,8 +138,9 @@ def attack_first_alive_monster():
             break
 
 
-def attack_hero():
-    damage = calc_damage(1, 15)
+def attack_hero(monster):
+
+    damage = calc_damage(monster['min_damage'],monster ['max_damage'])
     if damage <= hero_armor:
         game_state.get("game_log").append(f"Monster hit {damage} damage, all absorbed")
     else:
@@ -190,7 +207,7 @@ def hero_attack():
 def monster_pack_attack():
     for monster in game_state["active_monster_pack"]:
         if monster["hp"] > 0:
-            attack_hero()
+            attack_hero(monster)
             if hero_is_dead():
                 game_state["hero_dead"] = True
                 return
@@ -204,7 +221,7 @@ def game_restart():
         "hero_max_hp": 20,
         "hero_hp": 20,
         # "hero_armor": 10,
-        "monster_packs": [[skeleton1, skeleton_mage], [skeleton2, skeleton3]],
+        "monster_packs": [[skeleton1, skeleton_mage], [skeleton2, skeleton3],[skeleton_lich]],
         "active_monster_pack_index": 0,
         "active_monster_pack": None,
         "game_log": [],

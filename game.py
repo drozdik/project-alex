@@ -28,6 +28,19 @@ def calc_heal():
         health_points = health_points * 2
     return health_points
 
+def new_skeleton():
+    return {
+    "max_hp" : 30,
+    "hp" : 30,
+    "name" : "Skeleton",
+    }
+
+def new_skeleton_mage():
+    return {
+    "max_hp" : 35,
+    "hp" : 35,
+    "name" : "Skeleton-mage",
+    }
 
 min_damage = 1
 max_damage = 15

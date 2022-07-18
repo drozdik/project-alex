@@ -8,3 +8,4 @@ done - add scroll to log panel, such that new log appears at bottom and log auto
 done - different game over message on hero or monsters are dead
 
 backlog:
+ - inform player about last strike, monster's or hero's

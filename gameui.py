@@ -80,18 +80,18 @@ class Screen:
         self.knight_image_label.grid(row=0, column=0, columnspan=1)
 
         monster1_image = self.skeleton_image
-        if self.game_state["active_monster_pack"][0]["name"] == "Skeleton-mage":
+        if self.game_state["active_monster_pack"][0]["class"] == "Skeleton-mage":
             monster1_image = self.skeleton_mage_image
-        elif self.game_state["active_monster_pack"][0]["name"] == "Skeleton-Lich":
+        elif self.game_state["active_monster_pack"][0]["class"] == "Skeleton-Lich":
             monster1_image = self.skeleton_lich_image
         self.monster1_image_label = Label(self.frame, image=monster1_image)
         self.monster1_image_label.grid(row=0, column=1, columnspan=1)
         
 
         monster2_image = self.skeleton_image
-        if self.game_state["active_monster_pack"][1]["name"] == "Skeleton-mage":
+        if self.game_state["active_monster_pack"][1]["class"] == "Skeleton-mage":
             monster2_image = self.skeleton_mage_image
-        elif self.game_state["active_monster_pack"][1]["name"] == "Skeleton-Lich":
+        elif self.game_state["active_monster_pack"][1]["class"] == "Skeleton-Lich":
             monster2_image = self.skeleton_lich_image
         self.monster2_image_label = Label(self.frame, image=monster2_image)
         self.monster2_image_label.grid(row=0, column=2, columnspan=1)
@@ -158,16 +158,16 @@ class Screen:
         self.log_panel.see("end")
         # update monster images
         monster1_image = self.skeleton_image
-        if self.game_state["active_monster_pack"][0]["name"] == "Skeleton-mage":
+        if self.game_state["active_monster_pack"][0]["class"] == "Skeleton-mage":
             monster1_image = self.skeleton_mage_image
-        elif self.game_state["active_monster_pack"][0]["name"] == "Skeleton-Lich":
+        elif self.game_state["active_monster_pack"][0]["class"] == "Skeleton-Lich":
             monster1_image = self.skeleton_lich_image
         self.monster1_image_label.config(image=monster1_image)
 
         monster2_image = self.skeleton_image
-        if self.game_state["active_monster_pack"][1]["name"] == "Skeleton-mage":
+        if self.game_state["active_monster_pack"][1]["class"] == "Skeleton-mage":
             monster2_image = self.skeleton_mage_image
-        elif self.game_state["active_monster_pack"][1]["name"] == "Skeleton-Lich":
+        elif self.game_state["active_monster_pack"][1]["class"] == "Skeleton-Lich":
             monster2_image = self.skeleton_lich_image
         self.monster2_image_label.config(image=monster2_image)
         

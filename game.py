@@ -53,6 +53,7 @@ skeleton1 = {
     "max_hp" : 30,
     "hp" : 30,
     "name" : "Skeleton",
+    "class" : "Skeleton",
     "min_damage" : 3,
     "max_damage" : 15
 }
@@ -60,6 +61,7 @@ skeleton2 = {
     "max_hp" : 30,
     "hp" : 30,
     "name" : "Skeleton",
+    "class" : "Skeleton",
     "min_damage" : 3,
     "max_damage" : 15
 }
@@ -67,6 +69,7 @@ skeleton3 = {
     "max_hp" : 30,
     "hp" : 30,
     "name" : "Skeleton",
+    "class" : "Skeleton",
     "min_damage" : 3,
     "max_damage" : 15
 }
@@ -74,6 +77,7 @@ skeleton_mage = {
     "max_hp" : 20,
     "hp" : 20,
     "name" : "Skeleton-mage",
+    "class" : "Skeleton-mage",
     "min_damage" : 5,
     "max_damage" : 14
 
@@ -82,9 +86,11 @@ skeleton_lich ={
     "max_hp" : 60,
     "hp" : 60,
     "name": "Skeleton-Lich",
+    "class": "Skeleton-Lich",
     "min_damage" : 10,
     "max_damage" : 20
 }
+
 
 
 game_state = {

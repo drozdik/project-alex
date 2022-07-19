@@ -78,21 +78,11 @@ class Screen:
     def draw_images_and_buttons(self):
         self.knight_image_label = Label(self.frame, image=self.knight_image)
         self.knight_image_label.grid(row=0, column=0, columnspan=1)
-
-        monster1_image = self.skeleton_image
-        if self.game_state["active_monster_pack"][0]["class"] == "Skeleton-mage":
-            monster1_image = self.skeleton_mage_image
-        elif self.game_state["active_monster_pack"][0]["class"] == "Skeleton-Lich":
-            monster1_image = self.skeleton_lich_image
+        monster1_image = self.get_monster_image(self.game_state["active_monster_pack"][0])
         self.monster1_image_label = Label(self.frame, image=monster1_image)
         self.monster1_image_label.grid(row=0, column=1, columnspan=1)
-        
 
-        monster2_image = self.skeleton_image
-        if self.game_state["active_monster_pack"][1]["class"] == "Skeleton-mage":
-            monster2_image = self.skeleton_mage_image
-        elif self.game_state["active_monster_pack"][1]["class"] == "Skeleton-Lich":
-            monster2_image = self.skeleton_lich_image
+        monster2_image = self.get_monster_image(self.game_state["active_monster_pack"][1])
         self.monster2_image_label = Label(self.frame, image=monster2_image)
         self.monster2_image_label.grid(row=0, column=2, columnspan=1)
 
@@ -122,6 +112,15 @@ class Screen:
         damage_row = f"Damage: { self.game_state.get('hero_min_damage')} - {self.game_state.get('hero_max_damage')}"
         text = f"{class_row}\n{armor_row}\n{hp_row}\n{damage_row}"
         return text
+    
+    def get_monster_image(self, monster):
+        monster_image = self.skeleton_image
+        if monster["class"] == "Skeleton-mage":
+            monster_image = self.skeleton_mage_image
+        elif monster["class"] == "Skeleton-Lich":
+            monster_image = self.skeleton_lich_image
+        return monster_image
+
 
     def update_components(self):
         if self.game_state.get("hero_dead"):
@@ -157,18 +156,10 @@ class Screen:
         self.log_panel.configure(state ='disabled')
         self.log_panel.see("end")
         # update monster images
-        monster1_image = self.skeleton_image
-        if self.game_state["active_monster_pack"][0]["class"] == "Skeleton-mage":
-            monster1_image = self.skeleton_mage_image
-        elif self.game_state["active_monster_pack"][0]["class"] == "Skeleton-Lich":
-            monster1_image = self.skeleton_lich_image
+        monster1_image = self.get_monster_image(self.game_state["active_monster_pack"][0])
         self.monster1_image_label.config(image=monster1_image)
 
-        monster2_image = self.skeleton_image
-        if self.game_state["active_monster_pack"][1]["class"] == "Skeleton-mage":
-            monster2_image = self.skeleton_mage_image
-        elif self.game_state["active_monster_pack"][1]["class"] == "Skeleton-Lich":
-            monster2_image = self.skeleton_lich_image
+        monster2_image = self.get_monster_image(self.game_state["active_monster_pack"][1])
         self.monster2_image_label.config(image=monster2_image)
         
     def draw_health_panels(self):

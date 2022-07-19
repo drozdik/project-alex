@@ -114,6 +114,14 @@ class Screen:
         self.frame.destroy()
         self.frame = tkinter.Frame(self.root)
         self.frame.grid()
+    
+    def get_hero_text(self):
+        hp_row = f"Health: {self.game_state.get('hero_hp')}/{self.game_state.get('hero_max_hp')}"
+        class_row = f"Class: Knight"
+        armor_row = f"Armor: {self.game_state.get('hero_armor')}"
+        damage_row = f"Damage: { self.game_state.get('hero_min_damage')} - {self.game_state.get('hero_max_damage')}"
+        text = f"{class_row}\n{armor_row}\n{hp_row}\n{damage_row}"
+        return text
 
     def update_components(self):
         if self.game_state.get("hero_dead"):
@@ -127,14 +135,13 @@ class Screen:
 
         # forget health panels
         # update hero panel
-        self.hero_health_label.config(text=f"Class: Knight\nHealth: {self.game_state.get('hero_hp')}/{self.game_state.get('hero_max_hp')}",
-                                font=("Arial", 14))
+        hero_text = self.get_hero_text()
+        self.hero_health_label.config(text=hero_text,font=("Arial", 14))
         # update monster1 panel
         monster1 = self.game_state['active_monster_pack'][0] # it's dictionary now
         monster1_name = monster1["name"]
         monster1_hp = monster1["hp"]
-        self.monster_1_health_label.config(text=f"{monster1_name} health: {monster1_hp}",
-                                        font=("Arial", 14))
+        self.monster_1_health_label.config(text=f"{monster1_name} health: {monster1_hp}",font=("Arial", 14))
         # update monster2 panel
         monster2 = self.game_state['active_monster_pack'][1] # it's dictionary now
         monster2_name = monster2["name"]
@@ -166,7 +173,7 @@ class Screen:
         
     def draw_health_panels(self):
         self.hero_health_label = Label(self.frame,
-                                text=f"Class: Knight\nHealth: {self.game_state.get('hero_hp')}/{self.game_state.get('hero_max_hp')}",
+                                text = self.get_hero_text(),
                                 font=("Arial", 14))
         self.hero_health_label.grid(row=1, column=0)
 

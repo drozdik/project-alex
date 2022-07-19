@@ -7,7 +7,9 @@ done - fix error when last monster pack is dead
 done - add scroll to log panel, such that new log appears at bottom and log automatically scrolled to bottom
 done - different game over message on hero or monsters are dead
 done - use image for skeleton-Lich
+done - show hero armor and damage
 
 backlog:
  - inform player about last strike, monster's or hero's
  - fix error when 3 monster packs
+ 

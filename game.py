@@ -42,8 +42,6 @@ def new_skeleton_mage():
     "name" : "Skeleton-mage",
     }
 
-min_damage = 1
-max_damage = 15
 turn = 1
 # hero_max_hp = 20
 # hero_hp = hero_max_hp
@@ -95,6 +93,9 @@ game_state = {
     # "turn": 1,
     "hero_max_hp": 20,
     "hero_hp": 20,
+    "hero_min_damage": 1,
+    "hero_max_damage": 15,
+    "hero_armor": 10,
     # "hero_armor": 10,
     "monster_packs": [[skeleton_lich, skeleton_mage], [skeleton2, skeleton3],[skeleton_lich]],
     "active_monster_pack_index": 0,
@@ -142,7 +143,7 @@ def use_heal():
 
 
 def attack_first_alive_monster():
-    damage = calc_damage(min_damage, max_damage)
+    damage = calc_damage(game_state["hero_min_damage"],game_state["hero_max_damage"])
     hero_damage_log = f"You hit {damage} damage"
     game_state.get("game_log").append(hero_damage_log)
     for monster in game_state["active_monster_pack"]:

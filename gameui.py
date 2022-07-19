@@ -25,6 +25,7 @@ class Screen:
         self.knight_image = ImageTk.PhotoImage(Image.open("images/knight.png"))
         self.skeleton_image = ImageTk.PhotoImage(Image.open("images/skeleton.png"))
         self.skeleton_mage_image = ImageTk.PhotoImage(Image.open("images/skeleton-mage.png"))
+        self.skeleton_lich_image = ImageTk.PhotoImage(Image.open("images/skeleton-lich.png"))
 
         self.draw_images_and_buttons()
         self.draw_health_panels()
@@ -80,15 +81,18 @@ class Screen:
 
         monster1_image = self.skeleton_image
         if self.game_state["active_monster_pack"][0]["name"] == "Skeleton-mage":
-            print("monster is mage")
             monster1_image = self.skeleton_mage_image
+        elif self.game_state["active_monster_pack"][0]["name"] == "Skeleton-Lich":
+            monster1_image = self.skeleton_lich_image
         self.monster1_image_label = Label(self.frame, image=monster1_image)
         self.monster1_image_label.grid(row=0, column=1, columnspan=1)
+        
 
         monster2_image = self.skeleton_image
         if self.game_state["active_monster_pack"][1]["name"] == "Skeleton-mage":
-            print("monster is mage")
             monster2_image = self.skeleton_mage_image
+        elif self.game_state["active_monster_pack"][1]["name"] == "Skeleton-Lich":
+            monster2_image = self.skeleton_lich_image
         self.monster2_image_label = Label(self.frame, image=monster2_image)
         self.monster2_image_label.grid(row=0, column=2, columnspan=1)
 
@@ -148,16 +152,18 @@ class Screen:
         # update monster images
         monster1_image = self.skeleton_image
         if self.game_state["active_monster_pack"][0]["name"] == "Skeleton-mage":
-            print("monster is mage")
             monster1_image = self.skeleton_mage_image
+        elif self.game_state["active_monster_pack"][0]["name"] == "Skeleton-Lich":
+            monster1_image = self.skeleton_lich_image
         self.monster1_image_label.config(image=monster1_image)
 
         monster2_image = self.skeleton_image
         if self.game_state["active_monster_pack"][1]["name"] == "Skeleton-mage":
-            print("monster is mage")
             monster2_image = self.skeleton_mage_image
+        elif self.game_state["active_monster_pack"][1]["name"] == "Skeleton-Lich":
+            monster2_image = self.skeleton_lich_image
         self.monster2_image_label.config(image=monster2_image)
-
+        
     def draw_health_panels(self):
         self.hero_health_label = Label(self.frame,
                                 text=f"Class: Knight\nHealth: {self.game_state.get('hero_hp')}/{self.game_state.get('hero_max_hp')}",

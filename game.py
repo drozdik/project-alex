@@ -96,7 +96,7 @@ game_state = {
     "hero_max_hp": 20,
     "hero_hp": 20,
     # "hero_armor": 10,
-    "monster_packs": [[skeleton1, skeleton_mage], [skeleton2, skeleton3],[skeleton_lich]],
+    "monster_packs": [[skeleton_lich, skeleton_mage], [skeleton2, skeleton3],[skeleton_lich]],
     "active_monster_pack_index": 0,
     "active_monster_pack": None,
     "game_log": [],

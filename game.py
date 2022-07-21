@@ -144,23 +144,25 @@ def attack_first_alive_monster():
 
 
 def monster_attacks_hero(monster):
-
     damage = calc_damage(monster['min_damage'],monster ['max_damage'])
-    if damage <= game_state["hero_armor"]:
-        game_state.get("game_log").append(f"Monster hit {damage} damage, all absorbed")
-    else:
-        effective_damage = (damage - game_state["hero_armor"])
+    effective_damage = damage - game_state["hero_armor"]
+    if effective_damage > 0:
         game_state["hero_hp"] = game_state["hero_hp"] - effective_damage
-        game_state.get("game_log").append(f"Monster hit {damage} damage, {effective_damage} passes armor")
+    append_damage_log("Monster", damage, effective_damage)
 
 def hero_attacks_monster(monster):
     damage = calc_damage(game_state["hero_min_damage"],game_state["hero_max_damage"])
-    if damage <= monster["armor"]:
-        game_state.get("game_log").append(f"Hero hit {damage} damage, all absorbed")
-    else:
-        effective_damage = (damage - monster["armor"])
+    effective_damage = damage - monster["armor"]
+    if effective_damage > 0:
         monster["hp"] = monster["hp"] - effective_damage
-        game_state.get("game_log").append(f"Hero hit {damage} damage, {effective_damage} passes armor")
+    append_damage_log("Hero", damage, effective_damage)
+
+def append_damage_log(attacker, damage, effective_damage):
+    if(effective_damage <= 0):
+        game_state.get("game_log").append(f"{attacker} hit {damage} damage, all absorbed")
+    else:
+        game_state.get("game_log").append(f"{attacker} hit {damage} damage, {effective_damage} passes armor")
+
 
 def ask_for_hero_action():
     return input("Press any key or Q to end the programm. Press H to heal and hit")

@@ -31,52 +31,23 @@ def calc_heal():
 def new_skeleton():
     return {
     "max_hp" : 30,
+    "armor" : 10,
     "hp" : 30,
     "name" : "Skeleton",
+    "class" : "Skeleton",
+    "min_damage" : 3,
+    "max_damage" : 15
     }
+
+def create_monster_packs():
+    return[
+        [new_skeleton(),new_skeleton()],
+        [new_skeleton(),new_skeleton_mage()],
+        [new_skeleton(),new_skeleton_lich()]
+    ]
 
 def new_skeleton_mage():
     return {
-    "max_hp" : 35,
-    "hp" : 35,
-    "name" : "Skeleton-mage",
-    }
-
-turn = 1
-# hero_max_hp = 20
-# hero_hp = hero_max_hp
-hero_armor = 10
-# monster_packs = [[30, 20], [30, 30]]
-# active_monster_pack_index = 0
-# active_monster_pack = monster_packs[active_monster_pack_index]
-skeleton1 = {
-    "max_hp" : 30,
-    "armor" : 10,
-    "hp" : 30,
-    "name" : "Skeleton",
-    "class" : "Skeleton",
-    "min_damage" : 3,
-    "max_damage" : 15
-}
-skeleton2 = {
-    "max_hp" : 30,
-    "hp" : 30,
-    "armor" : 10,
-    "name" : "Skeleton",
-    "class" : "Skeleton",
-    "min_damage" : 3,
-    "max_damage" : 15
-}
-skeleton3 = {
-    "max_hp" : 30,
-    "hp" : 30,
-    "armor" : 10,
-    "name" : "Skeleton",
-    "class" : "Skeleton",
-    "min_damage" : 3,
-    "max_damage" : 15
-}
-skeleton_mage = {
     "max_hp" : 20,
     "hp" : 20,
     "armor" : 10,
@@ -84,9 +55,10 @@ skeleton_mage = {
     "class" : "Skeleton-mage",
     "min_damage" : 5,
     "max_damage" : 14
+    }
 
-}
-skeleton_lich ={
+def new_skeleton_lich():
+    return{
     "max_hp" : 60,
     "hp" : 60,
     "armor" : 10,
@@ -94,9 +66,9 @@ skeleton_lich ={
     "class": "Skeleton-Lich",
     "min_damage" : 10,
     "max_damage" : 20
-}
+    }
 
-
+turn = 1
 
 game_state = {
     # "min_damage": 1,
@@ -108,7 +80,7 @@ game_state = {
     "hero_max_damage": 15,
     "hero_armor": 10,
     # "hero_armor": 10,
-    "monster_packs": [[skeleton_lich, skeleton_mage], [skeleton2, skeleton3],[skeleton_lich]],
+    "monster_packs": create_monster_packs(),
     "active_monster_pack_index": 0,
     "active_monster_pack": None,
     "game_log": [],
@@ -166,10 +138,10 @@ def attack_first_alive_monster():
 def attack_hero(monster):
 
     damage = calc_damage(monster['min_damage'],monster ['max_damage'])
-    if damage <= hero_armor:
+    if damage <= game_state["hero_armor"]:
         game_state.get("game_log").append(f"Monster hit {damage} damage, all absorbed")
     else:
-        effective_damage = (damage - hero_armor)
+        effective_damage = (damage - game_state["hero_armor"])
         game_state["hero_hp"] = game_state["hero_hp"] - effective_damage
         game_state.get("game_log").append(f"Monster hit {damage} damage, {effective_damage} passes armor")
 
@@ -246,7 +218,7 @@ def game_restart():
         "hero_max_hp": 20,
         "hero_hp": 20,
         # "hero_armor": 10,
-        "monster_packs": [[skeleton1, skeleton_mage], [skeleton2, skeleton3],[skeleton_lich]],
+        "monster_packs": create_monster_packs(),
         "active_monster_pack_index": 0,
         "active_monster_pack": None,
         "game_log": [],

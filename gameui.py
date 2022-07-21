@@ -57,10 +57,8 @@ class Screen:
         self.root.destroy()
 
     def on_restart(self):
-        print("on restart called")
         self.game_restart()
         # destroy frame, which contains Game Over and buttons
-        print("destroying frame with Game Over")
         self.frame.destroy()
         # create fresh frame
         self.frame = tkinter.Frame(self.root)

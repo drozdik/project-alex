@@ -206,7 +206,7 @@ def game_restart():
         "hero_max_hp": 20,
         "hero_hp": 20,
         # "hero_armor": 10,
-        "monster_packs": game_state(),
+        "monster_packs": create_monster_packs(),
         "active_monster_pack_index": 0,
         "active_monster_pack": None,
         "game_log": [],

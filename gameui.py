@@ -2,6 +2,7 @@ from cgitb import text
 import tkinter
 from tkinter import *
 
+
 from PIL import ImageTk, Image
 from tkinter.scrolledtext import ScrolledText
 
@@ -110,7 +111,7 @@ class Screen:
         class_row = f"Class: Knight"
         armor_row = f"Armor: {self.game_state.get('hero_armor')}"
         damage_row = f"Damage: { self.game_state.get('hero_min_damage')} - {self.game_state.get('hero_max_damage')}"
-        text = f"{class_row}\n{armor_row}\n{hp_row}\n{damage_row}"
+        text = f"{class_row}\n{hp_row}\n{armor_row}\n{damage_row}"
         return text
     
     def get_monster_image(self, monster):
@@ -120,6 +121,19 @@ class Screen:
         elif monster["class"] == "Skeleton-Lich":
             monster_image = self.skeleton_lich_image
         return monster_image
+
+    def get_monster_text(self,monster):
+        monster_name = monster["class"]
+        monster_hp = monster["hp"]
+        monster_armor = monster["armor"]
+        monster_min_damage = monster["min_damage"]
+        monster_max_damage = monster["max_damage"]
+        monster_damage = f"Damage:{monster_min_damage} - {monster_max_damage}"
+
+        text = f"Class:{monster_name}\nHealtn:{monster_hp}\nArmor:{monster_armor}\n{monster_damage}"
+        return text
+
+
 
 
     def update_components(self):
@@ -138,15 +152,13 @@ class Screen:
         self.hero_health_label.config(text=hero_text,font=("Arial", 14))
         # update monster1 panel
         monster1 = self.game_state['active_monster_pack'][0] # it's dictionary now
-        monster1_name = monster1["name"]
-        monster1_hp = monster1["hp"]
-        self.monster_1_health_label.config(text=f"{monster1_name} health: {monster1_hp}",font=("Arial", 14))
+        monster1_text = self.get_monster_text(monster1)
+        self.monster_1_health_label.config(text= monster1_text,font=("Arial", 14))
         # update monster2 panel
         monster2 = self.game_state['active_monster_pack'][1] # it's dictionary now
-        monster2_name = monster2["name"]
-        monster2_hp = monster2["hp"]
-        self.monster_2_health_label.config(text=f"{monster2_name} health: {monster2_hp}"
-                                        ,font=("Arial", 14))
+        monster2_text = self.get_monster_text(monster2)
+        self.monster_2_health_label.config(text= monster2_text,font=("Arial", 14))
+                                        
         # update log panel
         log_content = ""
         for log in self.game_state.get("game_log"):
@@ -169,15 +181,9 @@ class Screen:
         self.hero_health_label.grid(row=1, column=0)
 
         monster1 = self.game_state['active_monster_pack'][0] # it's dictionary now
-        monster1_name = monster1["name"]
-        monster1_hp = monster1["hp"]
-        self.monster_1_health_label = Label(self.frame, text=f"{monster1_name} health: {monster1_hp}",
-                                        font=("Arial", 14))
+        self.monster_1_health_label = Label(self.frame, text=self.get_monster_text(monster1),font=("Arial", 14))
         self.monster_1_health_label.grid(row=1, column=1)
 
         monster2 = self.game_state['active_monster_pack'][1] # it's dictionary now
-        monster2_name = monster2["name"]
-        monster2_hp = monster2["hp"]
-        self.monster_2_health_label = Label(self.frame, text=f"{monster2_name} health: {monster2_hp}"
-                                        ,font=("Arial", 14))
+        self.monster_2_health_label = Label(self.frame, text=self.get_monster_text(monster2),font=("Arial", 14))
         self.monster_2_health_label.grid(row=1, column=2)

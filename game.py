@@ -51,6 +51,7 @@ hero_armor = 10
 # active_monster_pack = monster_packs[active_monster_pack_index]
 skeleton1 = {
     "max_hp" : 30,
+    "armor" : 10,
     "hp" : 30,
     "name" : "Skeleton",
     "class" : "Skeleton",
@@ -60,6 +61,7 @@ skeleton1 = {
 skeleton2 = {
     "max_hp" : 30,
     "hp" : 30,
+    "armor" : 10,
     "name" : "Skeleton",
     "class" : "Skeleton",
     "min_damage" : 3,
@@ -68,6 +70,7 @@ skeleton2 = {
 skeleton3 = {
     "max_hp" : 30,
     "hp" : 30,
+    "armor" : 10,
     "name" : "Skeleton",
     "class" : "Skeleton",
     "min_damage" : 3,
@@ -76,6 +79,7 @@ skeleton3 = {
 skeleton_mage = {
     "max_hp" : 20,
     "hp" : 20,
+    "armor" : 10,
     "name" : "Skeleton-mage",
     "class" : "Skeleton-mage",
     "min_damage" : 5,
@@ -85,6 +89,7 @@ skeleton_mage = {
 skeleton_lich ={
     "max_hp" : 60,
     "hp" : 60,
+    "armor" : 10,
     "name": "Skeleton-Lich",
     "class": "Skeleton-Lich",
     "min_damage" : 10,

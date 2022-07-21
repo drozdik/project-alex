@@ -9,13 +9,15 @@ from tkinter.scrolledtext import ScrolledText
 
 class Screen:
 
-    def __init__(self, hero_attack, use_heal, game_state, game_restart):
+    def __init__(self, hero_attack, use_heal, game_state, game_restart, use_precision_strike, use_aoe_strike):
         # state
         self.game_state = game_state
         # hook functions
         self.hero_attack = hero_attack
         self.use_heal = use_heal
         self.game_restart = game_restart
+        self.use_precision_strike = use_precision_strike
+        self.use_aoe_strike = use_aoe_strike
         # init root with title
         self.root = Tk()
         self.root.title("Diablo dnd edition")
@@ -41,7 +43,7 @@ class Screen:
         for log in self.game_state.get("game_log"):
             log_content += log + "\n"
         self.log_panel = ScrolledText(self.frame, width=80,  height=15)
-        self.log_panel.grid(row=4, column=0, columnspan=3)
+        self.log_panel.grid(row=6, column=0, columnspan=3)
         self.log_panel.insert(INSERT, log_content)
         self.log_panel.configure(state ='disabled')
         self.log_panel.see("end")
@@ -52,6 +54,14 @@ class Screen:
 
     def on_hero_heal(self):
         self.use_heal()
+        self.update_components()
+
+    def on_hero_precision_strike(self):
+        self.use_precision_strike()
+        self.update_components()
+
+    def on_hero_aoe_strike(self):
+        self.use_aoe_strike()
         self.update_components()
 
     def quit(self):
@@ -90,6 +100,12 @@ class Screen:
 
         hero_heal_button = Button(self.frame, text="Heal", command=self.on_hero_heal)
         hero_heal_button.grid(row=3, column=0, columnspan=1)
+
+        hero_precision_strike_button = Button(self.frame, text="Precision Strike", command=self.on_hero_precision_strike)
+        hero_precision_strike_button.grid(row=4, column=0, columnspan=1)
+
+        hero_aoe_strike_button = Button(self.frame, text="AOE Strike", command=self.on_hero_aoe_strike)
+        hero_aoe_strike_button.grid(row=5, column=0, columnspan=1)
 
     def draw_game_over_components(self, text="Game Over."):
         l_game_over = Label(self.frame, text=text)

@@ -39,7 +39,7 @@ def new_skeleton():
     "max_damage" : 15
     }
 
-def game_state():
+def create_monster_packs():
     return[
         [new_skeleton(),new_skeleton()],
         [new_skeleton(),new_skeleton_mage()],
@@ -80,7 +80,7 @@ game_state = {
     "hero_max_damage": 15,
     "hero_armor": 10,
     # "hero_armor": 10,
-    "monster_packs": game_state(),
+    "monster_packs": create_monster_packs(),
     "active_monster_pack_index": 0,
     "active_monster_pack": None,
     "game_log": [],
@@ -124,6 +124,17 @@ def use_heal():
         game_state["hero_hp"] = game_state["hero_max_hp"]
         game_state.get("game_log").append("Healed to max HP")
 
+def use_precision_strike():
+    print('Implement me, pleas! Doing regular strike for now')
+    attack_first_alive_monster() # hint: create new!
+    after_hero_turn()
+
+def use_aoe_strike():
+    print('Implement me, pleas! Doing regular strike for now')
+    attack_first_alive_monster()
+    after_hero_turn()
+
+
 
 def attack_first_alive_monster():
     for monster in game_state["active_monster_pack"]:
@@ -163,41 +174,11 @@ def hero_turn():
     return turn % 2 == 1
 
 
-# start game
-# hero attack # hero heal
-# monster attack
-# quit game
-
-# while True:
-#     if hero_turn():
-#         user_input = ask_for_hero_action()
-#         if user_input == "Q":
-#             break
-#         if user_input == "H":
-#             use_heal()
-#         attack_first_alive_monster()
-#
-#     else:  # monster turn
-#         user_input = ask_for_monster_turn()
-#         for monster_hp in active_monster_pack:
-#             if monster_hp > 0 and not hero_is_dead():
-#                 attack_hero()
-#
-#     if pack_is_dead():
-#         switch_to_next_monster_pack()
-#
-#     if all_packs_are_dead():
-#         print("All packs is dead")
-#         break
-#     if hero_is_dead():
-#         print("Hero is dead")
-#         break
-#     turn = turn + 1
-#
-# print("Game over")
-
-def hero_attack():
+def hero_attack(): # regular attack
     attack_first_alive_monster()
+    after_hero_turn()
+
+def after_hero_turn():
     if pack_is_dead():
         if last_pack_active():
             game_state["monsters_dead"] = True
@@ -233,4 +214,4 @@ def game_restart():
     game_state["active_monster_pack"] = game_state["monster_packs"][game_state["active_monster_pack_index"]]
 
 
-screen = Screen(hero_attack, use_heal, game_state, game_restart)
+screen = Screen(hero_attack, use_heal, game_state, game_restart, use_precision_strike, use_aoe_strike)

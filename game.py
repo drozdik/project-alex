@@ -31,7 +31,7 @@ def calc_heal():
 def new_skeleton():
     return {
     "max_hp" : 30,
-    "armor" : 10,
+    "armor" : 2,
     "hp" : 30,
     "name" : "Skeleton",
     "class" : "Skeleton",
@@ -39,7 +39,7 @@ def new_skeleton():
     "max_damage" : 15
     }
 
-def create_monster_packs():
+def game_state():
     return[
         [new_skeleton(),new_skeleton()],
         [new_skeleton(),new_skeleton_mage()],
@@ -50,7 +50,7 @@ def new_skeleton_mage():
     return {
     "max_hp" : 20,
     "hp" : 20,
-    "armor" : 10,
+    "armor" : 2,
     "name" : "Skeleton-mage",
     "class" : "Skeleton-mage",
     "min_damage" : 5,
@@ -61,7 +61,7 @@ def new_skeleton_lich():
     return{
     "max_hp" : 60,
     "hp" : 60,
-    "armor" : 10,
+    "armor" : 3,
     "name": "Skeleton-Lich",
     "class": "Skeleton-Lich",
     "min_damage" : 10,
@@ -80,7 +80,7 @@ game_state = {
     "hero_max_damage": 15,
     "hero_armor": 10,
     # "hero_armor": 10,
-    "monster_packs": create_monster_packs(),
+    "monster_packs": game_state(),
     "active_monster_pack_index": 0,
     "active_monster_pack": None,
     "game_log": [],
@@ -126,16 +126,13 @@ def use_heal():
 
 
 def attack_first_alive_monster():
-    damage = calc_damage(game_state["hero_min_damage"],game_state["hero_max_damage"])
-    hero_damage_log = f"You hit {damage} damage"
-    game_state.get("game_log").append(hero_damage_log)
     for monster in game_state["active_monster_pack"]:
         if monster["hp"] > 0:
-            monster["hp"] = monster["hp"] - damage
+            hero_attacks_monster(monster)
             break
 
 
-def attack_hero(monster):
+def monster_attacks_hero(monster):
 
     damage = calc_damage(monster['min_damage'],monster ['max_damage'])
     if damage <= game_state["hero_armor"]:
@@ -145,6 +142,14 @@ def attack_hero(monster):
         game_state["hero_hp"] = game_state["hero_hp"] - effective_damage
         game_state.get("game_log").append(f"Monster hit {damage} damage, {effective_damage} passes armor")
 
+def hero_attacks_monster(monster):
+    damage = calc_damage(game_state["hero_min_damage"],game_state["hero_max_damage"])
+    if damage <= monster["armor"]:
+        game_state.get("game_log").append(f"Hero hit {damage} damage, all absorbed")
+    else:
+        effective_damage = (damage - monster["armor"])
+        monster["hp"] = monster["hp"] - effective_damage
+        game_state.get("game_log").append(f"Hero hit {damage} damage, {effective_damage} passes armor")
 
 def ask_for_hero_action():
     return input("Press any key or Q to end the programm. Press H to heal and hit")
@@ -204,7 +209,7 @@ def hero_attack():
 def monster_pack_attack():
     for monster in game_state["active_monster_pack"]:
         if monster["hp"] > 0:
-            attack_hero(monster)
+            monster_attacks_hero(monster)
             if hero_is_dead():
                 game_state["hero_dead"] = True
                 return
@@ -218,7 +223,7 @@ def game_restart():
         "hero_max_hp": 20,
         "hero_hp": 20,
         # "hero_armor": 10,
-        "monster_packs": create_monster_packs(),
+        "monster_packs": game_state(),
         "active_monster_pack_index": 0,
         "active_monster_pack": None,
         "game_log": [],

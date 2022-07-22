@@ -147,6 +147,8 @@ def use_aoe_strike():
         append_damage_log("Hero", damage, effective_damage)
     after_hero_turn()
 
+def use_combo_strike():
+    pass
 
 
 
@@ -235,4 +237,4 @@ def game_restart():
     game_state["active_monster_pack"] = game_state["monster_packs"][game_state["active_monster_pack_index"]]
 
 
-screen = Screen(hero_attack, use_heal, game_state, game_restart, use_precision_strike, use_aoe_strike)
+screen = Screen(hero_attack, use_heal, game_state, game_restart, use_precision_strike, use_aoe_strike, use_combo_strike)

@@ -9,7 +9,7 @@ from tkinter.scrolledtext import ScrolledText
 
 class Screen:
 
-    def __init__(self, hero_attack, use_heal, game_state, game_restart, use_precision_strike, use_aoe_strike):
+    def __init__(self, hero_attack, use_heal, game_state, game_restart, use_precision_strike, use_aoe_strike, use_combo_strike):
         # state
         self.game_state = game_state
         # hook functions
@@ -18,6 +18,7 @@ class Screen:
         self.game_restart = game_restart
         self.use_precision_strike = use_precision_strike
         self.use_aoe_strike = use_aoe_strike
+        self.use_combo_strike = use_combo_strike
         # init root with title
         self.root = Tk()
         self.root.title("Diablo dnd edition")
@@ -44,7 +45,7 @@ class Screen:
         for log in self.game_state.get("game_log"):
             log_content += log + "\n"
         self.log_panel = ScrolledText(self.frame, width=80,  height=15)
-        self.log_panel.grid(row=7, column=0, columnspan=3)
+        self.log_panel.grid(row=8, column=0, columnspan=3)
         self.log_panel.insert(INSERT, log_content)
         self.log_panel.configure(state ='disabled')
         self.log_panel.see("end")
@@ -67,6 +68,11 @@ class Screen:
     def on_hero_aoe_strike(self):
         self.remember_all_hp_and_pack()
         self.use_aoe_strike()
+        self.update_components()
+
+    def on_hero_combo_strike(self):
+        self.remember_all_hp_and_pack()
+        self.use_combo_strike()
         self.update_components()
 
     def quit(self):
@@ -112,6 +118,9 @@ class Screen:
 
         hero_aoe_strike_button = Button(self.frame, text="AOE Strike", command=self.on_hero_aoe_strike)
         hero_aoe_strike_button.grid(row=6, column=0, columnspan=1)
+
+        hero_aoe_strike_button = Button(self.frame, text="Combo Strike", command=self.on_hero_combo_strike)
+        hero_aoe_strike_button.grid(row=7, column=0, columnspan=1)
 
     def draw_status_panels(self):
         self.hero_status = Label(self.frame, text="", font="Arial 14 bold", fg='red')

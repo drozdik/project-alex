@@ -153,6 +153,7 @@ def use_combo_strike():
     hero_attacks_monster(monster)
     hero_attacks_monster(monster)
     game_state["hero_armor"] = game_state["hero_armor"] - 5
+    after_hero_turn()
 
 def attack_first_alive_monster():
     monster = get_first_alive_monster()

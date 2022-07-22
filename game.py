@@ -85,6 +85,7 @@ game_state = {
     "hero_min_damage": 2,
     "hero_max_damage": 15,
     "hero_armor": 10,
+    "hero_base_armor": 10,
     # "hero_armor": 10,
     "monster_packs": create_monster_packs(),
     "active_monster_pack_index": 0,
@@ -148,10 +149,10 @@ def use_aoe_strike():
     after_hero_turn()
 
 def use_combo_strike():
-    pass
-
-
-
+    monster = get_first_alive_monster()
+    hero_attacks_monster(monster)
+    hero_attacks_monster(monster)
+    game_state["hero_armor"] = game_state["hero_armor"] - 5
 
 def attack_first_alive_monster():
     monster = get_first_alive_monster()
@@ -170,6 +171,8 @@ def monster_attacks_hero(monster):
     if effective_damage > 0:
         game_state["hero_hp"] = game_state["hero_hp"] - effective_damage
     append_damage_log("Monster", damage, effective_damage)
+    #hack1, restore armor after combo strike
+    game_state["hero_armor"] = game_state["hero_base_armor"]
 
 def hero_attacks_monster(monster):
     damage = calc_damage(game_state["hero_min_damage"],game_state["hero_max_damage"])

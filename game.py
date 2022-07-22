@@ -28,10 +28,16 @@ def calc_heal():
         health_points = health_points * 2
     return health_points
 
+
+    
+
+
+    
+
 def new_skeleton():
     return {
     "max_hp" : 30,
-    "armor" : 2,
+    "armor" : 3,
     "hp" : 30,
     "name" : "Skeleton",
     "class" : "Skeleton",
@@ -61,7 +67,7 @@ def new_skeleton_lich():
     return{
     "max_hp" : 60,
     "hp" : 60,
-    "armor" : 3,
+    "armor" : 5,
     "name": "Skeleton-Lich",
     "class": "Skeleton-Lich",
     "min_damage" : 10,
@@ -76,7 +82,7 @@ game_state = {
     # "turn": 1,
     "hero_max_hp": 20,
     "hero_hp": 20,
-    "hero_min_damage": 1,
+    "hero_min_damage": 2,
     "hero_max_damage": 15,
     "hero_armor": 10,
     # "hero_armor": 10,
@@ -125,22 +131,35 @@ def use_heal():
         game_state.get("game_log").append("Healed to max HP")
 
 def use_precision_strike():
-    print('Implement me, pleas! Doing regular strike for now')
-    attack_first_alive_monster() # hint: create new!
+    monster = get_first_alive_monster()
+    damage = calc_damage(game_state["hero_min_damage"],game_state["hero_max_damage"]) + 5   
+    monster["hp"] = monster["hp"] - damage
+    game_state["hero_hp"] = game_state["hero_hp"] - 1
+    append_damage_log("Hero", damage, damage)
     after_hero_turn()
 
 def use_aoe_strike():
-    print('Implement me, pleas! Doing regular strike for now')
-    attack_first_alive_monster()
+    damage = calc_damage(game_state["hero_min_damage"], game_state["hero_max_damage"]) - 1
+    for monster in game_state["active_monster_pack"]:
+        effective_damage = damage - monster["armor"]
+        if effective_damage > 0:
+            monster["hp"] = monster["hp"] - effective_damage
+        append_damage_log("Hero", damage, effective_damage)
     after_hero_turn()
+
+
 
 
 
 def attack_first_alive_monster():
+    monster = get_first_alive_monster()
+    hero_attacks_monster(monster)
+
+def get_first_alive_monster():
     for monster in game_state["active_monster_pack"]:
         if monster["hp"] > 0:
-            hero_attacks_monster(monster)
-            break
+            return monster
+
 
 
 def monster_attacks_hero(monster):

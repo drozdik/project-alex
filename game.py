@@ -42,6 +42,7 @@ def new_skeleton():
 def create_monster_packs():
     return[
         [new_skeleton(),new_skeleton()],
+        [new_skeleton(),new_skeleton()],
         [new_skeleton(),new_skeleton_mage()],
         [new_skeleton(),new_skeleton_lich()]
     ]

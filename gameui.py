@@ -110,8 +110,8 @@ class Screen:
         hero_attack_button = Button(self.frame, text="Attack and finish turn", command=self.on_hero_attack)
         hero_attack_button.grid(row=3, column=0, columnspan=1)
 
-        hero_heal_button = Button(self.frame, text="Heal", command=self.on_hero_heal)
-        hero_heal_button.grid(row=4, column=0, columnspan=1)
+        self.hero_heal_button = Button(self.frame, text="Heal", command=self.on_hero_heal)
+        self.hero_heal_button.grid(row=4, column=0, columnspan=1)
 
         hero_precision_strike_button = Button(self.frame, text="Precision Strike", command=self.on_hero_precision_strike)
         hero_precision_strike_button.grid(row=5, column=0, columnspan=1)
@@ -148,7 +148,8 @@ class Screen:
         class_row = f"Class: Knight"
         armor_row = f"Armor: {self.game_state.get('hero_armor')}"
         damage_row = f"Damage: { self.game_state.get('hero_min_damage')} - {self.game_state.get('hero_max_damage')}"
-        text = f"{class_row}\n{hp_row}\n{armor_row}\n{damage_row}"
+        healing_potions_row = f"Potions: {self.game_state.get('healing_potions')}"
+        text = f"{class_row}\n{hp_row}\n{armor_row}\n{damage_row}\n{healing_potions_row}"
         return text
     
     def get_monster_image(self, monster):
@@ -170,10 +171,9 @@ class Screen:
         text = f"Class:{monster_name}\nHealtn:{monster_hp}\nArmor:{monster_armor}\n{monster_damage}"
         return text
 
-
-
-
     def update_components(self):
+        if self.game_state.get('healing_potions') == 0:
+            self.hero_heal_button.config(state='disabled')
         if self.game_state.get("hero_dead"):
             self.destroy_frame()
             self.draw_game_over_components("Hero is dead. Game Over.")

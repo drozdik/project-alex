@@ -21,7 +21,7 @@ def roll_dice(sides):
 
 
 def calc_heal():
-    health_points = roll_dice(30)
+    health_points = randint(20, 40)
     luck = roll_dice(10)
     if luck == 10:
         game_state.get("game_log").append("God loves you")
@@ -40,7 +40,7 @@ def new_game_state():
     "hero_base_max_damage": 20,
     "hero_armor": 10,
     "hero_base_armor": 10,
-    # "hero_armor": 10,
+    "healing_potions": 5,
     "monster_packs": create_monster_packs(),
     "active_monster_pack_index": 0,
     "active_monster_pack": None,
@@ -135,10 +135,13 @@ def last_pack_active():
 
 
 def use_heal():
+    if(game_state["healing_potions"] <= 0):
+        raise Exception("No healing potions")
+    game_state['healing_potions'] -= 1
     health_points = calc_heal()
     game_state.get("game_log").append(f"Healing {health_points}")
     game_state["hero_hp"] = game_state["hero_hp"] + health_points
-    game_state["hero_max_damage"] = game_state["hero_max_damage"] + 2
+    game_state["hero_max_damage"] = game_state["hero_max_damage"] + 4
     if game_state["hero_max_damage"] >= game_state["hero_base_max_damage"]:
         game_state["hero_max_damage"] = game_state["hero_base_max_damage"]
         game_state.get("game_log").append("Restored max damage")

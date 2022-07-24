@@ -21,7 +21,7 @@ def roll_dice(sides):
 
 
 def calc_heal():
-    health_points = roll_dice(8)
+    health_points = roll_dice(30)
     luck = roll_dice(10)
     if luck == 10:
         game_state.get("game_log").append("God loves you")
@@ -41,7 +41,7 @@ def new_skeleton():
 
 def create_monster_packs():
     return[
-        [new_skeleton(),new_skeleton_mage()],
+        [new_skeleton(),new_skeleton()],
         [new_skeleton(),new_skeleton_mage()],
         [new_skeleton(),new_skeleton_lich()]
     ]
@@ -74,13 +74,13 @@ game_state = {
     # "min_damage": 1,
     # "max_damage": 15,
     # "turn": 1,
-    "hero_max_hp": 200,
-    "hero_hp": 200,
+    "hero_max_hp": 100,
+    "hero_hp": 100,
     "hero_min_damage": 2,
-    "hero_max_damage": 15,
-    "hero_base_max_damage": 15,
-    "hero_armor": 1,
-    "hero_base_armor": 1,
+    "hero_max_damage": 20,
+    "hero_base_max_damage": 20,
+    "hero_armor": 10,
+    "hero_base_armor": 10,
     # "hero_armor": 10,
     "monster_packs": create_monster_packs(),
     "active_monster_pack_index": 0,

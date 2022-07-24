@@ -1,10 +1,7 @@
 from random import randint
 
-from controller import Controller
 from gameui import Screen
-from model import Model
 
-screen = None
 
 def calc_damage(min_damage, max_damage):
     damage = randint(min_damage, max_damage)
@@ -41,8 +38,8 @@ def new_game_state():
     "hero_min_damage": 2,
     "hero_max_damage": 20,
     "hero_base_max_damage": 20,
-    "hero_armor": 1,
-    "hero_base_armor": 1,
+    "hero_armor": 10,
+    "hero_base_armor": 10,
     "healing_potions": 5,
     "monster_packs": create_monster_packs(),
     "active_monster_pack_index": 0,
@@ -138,7 +135,6 @@ def last_pack_active():
 
 
 def use_heal():
-    prev_state = game_state.copy()
     if(game_state["healing_potions"] <= 0):
         raise Exception("No healing potions")
     game_state['healing_potions'] -= 1
@@ -153,7 +149,6 @@ def use_heal():
     if game_state["hero_hp"] >= game_state["hero_max_hp"]:
         game_state["hero_hp"] = game_state["hero_max_hp"]
         game_state.get("game_log").append("Healed to max HP")
-    screen.on_model_update(Model(prev_state, game_state))
     
 
 def use_precision_strike():
@@ -192,7 +187,6 @@ def get_first_alive_monster():
 
 
 def monster_attacks_hero(monster):
-    prev_state = game_state.copy()
     damage = calc_damage(monster['min_damage'],monster ['max_damage'])
     effective_damage = damage - game_state["hero_armor"]
     if effective_damage > 0:
@@ -206,7 +200,6 @@ def monster_attacks_hero(monster):
         game_state["hero_max_damage"] = game_state["hero_max_damage"] - 5
         if game_state["hero_max_damage"] <= game_state["hero_min_damage"]:
             game_state["hero_max_damage"] = game_state["hero_min_damage"]
-    screen.on_model_update(Model(prev_state, game_state.copy()))
 
 def hero_attacks_monster(monster):
     damage = calc_damage(game_state["hero_min_damage"],game_state["hero_max_damage"])
@@ -260,11 +253,4 @@ def game_restart():
     game_state.update(new_game_state())
 
 
-
-controller = Controller(use_heal)
-screen = Screen(hero_attack, use_heal, game_state, game_restart, use_precision_strike, use_aoe_strike, use_combo_strike, controller)
-screen.display()
-
-# screen create with game as a controller
-# game.subscribe(screen)
-# screen.display()
+screen = Screen(hero_attack, use_heal, game_state, game_restart, use_precision_strike, use_aoe_strike, use_combo_strike)

@@ -28,6 +28,29 @@ def calc_heal():
         health_points = health_points * 2
     return health_points       
 
+def new_game_state():
+    state = {
+    # "min_damage": 1,
+    # "max_damage": 15,
+    # "turn": 1,
+    "hero_max_hp": 100,
+    "hero_hp": 100,
+    "hero_min_damage": 2,
+    "hero_max_damage": 20,
+    "hero_base_max_damage": 20,
+    "hero_armor": 10,
+    "hero_base_armor": 10,
+    # "hero_armor": 10,
+    "monster_packs": create_monster_packs(),
+    "active_monster_pack_index": 0,
+    "active_monster_pack": None,
+    "game_log": [],
+    "hero_dead": False,
+    "monsters_dead": False
+    }
+    state["active_monster_pack"] = state["monster_packs"][state["active_monster_pack_index"]]
+    return state
+
 def new_skeleton():
     return {
     "max_hp" : 30,
@@ -40,12 +63,22 @@ def new_skeleton():
     }
 
 def create_monster_packs():
-    return[
-        [new_skeleton(),new_skeleton()],
-        [new_skeleton(),new_skeleton()],
-        [new_skeleton(),new_skeleton_mage()],
-        [new_skeleton(),new_skeleton_lich()]
-    ]
+    packs = []
+    for i in range(10):
+        pack = [new_skeleton(), new_skeleton()]
+        mage_chance = randint(1,100)
+        if(mage_chance < 20): # 20% of times it's True
+            pack[1] = new_skeleton_mage()
+            mage_chance = randint(1,100)
+            if(mage_chance < 10):
+                pack[0] = new_skeleton_mage()
+        lich_chance = randint(1,100)
+        if(lich_chance < (0 + i*10)): # each pack lich chance increased by 5%
+            pack = [new_skeleton(), new_skeleton_lich()]
+            packs.append(pack)
+            break # lich is always end of dungeon, so no more packs needed
+        packs.append(pack)
+    return packs
 
 def new_skeleton_mage():
     return {
@@ -71,25 +104,7 @@ def new_skeleton_lich():
 
 turn = 1
 
-game_state = {
-    # "min_damage": 1,
-    # "max_damage": 15,
-    # "turn": 1,
-    "hero_max_hp": 100,
-    "hero_hp": 100,
-    "hero_min_damage": 2,
-    "hero_max_damage": 20,
-    "hero_base_max_damage": 20,
-    "hero_armor": 10,
-    "hero_base_armor": 10,
-    # "hero_armor": 10,
-    "monster_packs": create_monster_packs(),
-    "active_monster_pack_index": 0,
-    "active_monster_pack": None,
-    "game_log": [],
-    "hero_dead": False,
-    "monsters_dead": False
-}
+game_state = new_game_state()
 
 game_state["active_monster_pack"] = game_state["monster_packs"][game_state["active_monster_pack_index"]]
 
@@ -232,21 +247,7 @@ def monster_pack_attack():
 
 
 def game_restart():
-    game_state.update({
-        # "min_damage": 1,
-        # "max_damage": 15,
-        # "turn": 1,
-        "hero_max_hp": 20,
-        "hero_hp": 20,
-        # "hero_armor": 10,
-        "monster_packs": create_monster_packs(),
-        "active_monster_pack_index": 0,
-        "active_monster_pack": None,
-        "game_log": [],
-        "hero_dead": False,
-        "monsters_dead": False
-    })
-    game_state["active_monster_pack"] = game_state["monster_packs"][game_state["active_monster_pack_index"]]
+    game_state.update(new_game_state())
 
 
 screen = Screen(hero_attack, use_heal, game_state, game_restart, use_precision_strike, use_aoe_strike, use_combo_strike)

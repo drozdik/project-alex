@@ -54,7 +54,7 @@ def new_skeleton_mage():
     "armor" : 2,
     "name" : "Skeleton-mage",
     "class" : "Skeleton-mage",
-    "min_damage" : 5,
+    "min_damage" : 10,
     "max_damage" : 14
     }
 

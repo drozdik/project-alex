@@ -6,10 +6,13 @@ from tkinter import *
 from PIL import ImageTk, Image
 from tkinter.scrolledtext import ScrolledText
 
+from controller import Controller
+from model import Model
+
 
 class Screen:
 
-    def __init__(self, hero_attack, use_heal, game_state, game_restart, use_precision_strike, use_aoe_strike, use_combo_strike):
+    def __init__(self, hero_attack, use_heal, game_state, game_restart, use_precision_strike, use_aoe_strike, use_combo_strike, controller: Controller):
         # state
         self.game_state = game_state
         # hook functions
@@ -19,6 +22,7 @@ class Screen:
         self.use_precision_strike = use_precision_strike
         self.use_aoe_strike = use_aoe_strike
         self.use_combo_strike = use_combo_strike
+        self.controller = controller
         # init root with title
         self.root = Tk()
         self.root.title("Diablo dnd edition")
@@ -35,9 +39,23 @@ class Screen:
         self.draw_status_panels()
         self.draw_health_panels()
         self.draw_log_panel()
+        self.events = []
 
-        # start UI
+    def display(self):
+        self.dispatch_events()
         self.root.mainloop()
+
+    def print_stuff(self):
+        print("Event")
+
+    def dispatch_events(self):
+        if(len(self.events) > 0):
+            cmd = self.events.pop()
+            cmd.execute()
+            self.root.after(1000, self.dispatch_events)
+        else:
+            self.root.after(1000, self.dispatch_events)
+
 
 
     def draw_log_panel(self):
@@ -57,8 +75,7 @@ class Screen:
 
     def on_hero_heal(self):
         self.remember_all_hp_and_pack()
-        self.use_heal()
-        self.update_components()
+        self.controller.use_heal()
 
     def on_hero_precision_strike(self):
         self.remember_all_hp_and_pack()
@@ -170,6 +187,19 @@ class Screen:
 
         text = f"Class:{monster_name}\nHealtn:{monster_hp}\nArmor:{monster_armor}\n{monster_damage}"
         return text
+    
+    def show_hero_hp_status(self, model):
+        self.hero_status.config(text=f"{'%+d' % (model.get_hero_hp_diff())}")
+
+
+    def on_model_update(self, model:Model):
+        # hero hp changed
+        self.hero_status.config(text="")
+        if model.hero_hp_changed():
+            #self.hero_status.config(text=f"{'%+d' % (model.get_hero_hp_diff())}")
+            self.events.append(MyCommand(self.show_hero_hp_status, model))
+            # time.sleep - bad idea
+        #self.root.after(500, self.update_components) # doesn't work either
 
     def update_components(self):
         if self.game_state.get('healing_potions') == 0:
@@ -213,15 +243,12 @@ class Screen:
         self.update_status_labels()
 
     def update_status_labels(self):
-        self.hero_status.config(text="")
         self.monster1_status.config(text="")
         self.monster2_status.config(text="")
         if(self.monster_pack != self.get_active_monster_pack()):
             # pack changed, leave empty statuses
             return
 
-        if self.hero_hp != self.get_hero_hp():
-            self.hero_status.config(text=f"{'%+d' % (self.get_hero_hp() - self.hero_hp)}")
         if self.monster1_hp != self.get_monster1_hp():
             self.monster1_status.config(text=f"{self.get_monster1_hp() - self.monster1_hp}")
         if self.monster2_hp != self.get_monster2_hp():
@@ -259,3 +286,12 @@ class Screen:
 
     def get_active_monster_pack(self):
         return self.game_state["active_monster_pack"]
+
+
+class MyCommand:
+    def __init__(self, func, model:Model) -> None:
+        self.func=func
+        self.model=model
+
+    def execute(self):
+        self.func(self.model)

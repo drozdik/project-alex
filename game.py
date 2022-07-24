@@ -26,13 +26,7 @@ def calc_heal():
     if luck == 10:
         game_state.get("game_log").append("God loves you")
         health_points = health_points * 2
-    return health_points
-
-
-    
-
-
-    
+    return health_points       
 
 def new_skeleton():
     return {
@@ -47,7 +41,7 @@ def new_skeleton():
 
 def create_monster_packs():
     return[
-        [new_skeleton(),new_skeleton()],
+        [new_skeleton(),new_skeleton_mage()],
         [new_skeleton(),new_skeleton_mage()],
         [new_skeleton(),new_skeleton_lich()]
     ]
@@ -80,12 +74,13 @@ game_state = {
     # "min_damage": 1,
     # "max_damage": 15,
     # "turn": 1,
-    "hero_max_hp": 20,
-    "hero_hp": 20,
+    "hero_max_hp": 200,
+    "hero_hp": 200,
     "hero_min_damage": 2,
     "hero_max_damage": 15,
-    "hero_armor": 10,
-    "hero_base_armor": 10,
+    "hero_base_max_damage": 15,
+    "hero_armor": 1,
+    "hero_base_armor": 1,
     # "hero_armor": 10,
     "monster_packs": create_monster_packs(),
     "active_monster_pack_index": 0,
@@ -127,9 +122,15 @@ def use_heal():
     health_points = calc_heal()
     game_state.get("game_log").append(f"Healing {health_points}")
     game_state["hero_hp"] = game_state["hero_hp"] + health_points
+    game_state["hero_max_damage"] = game_state["hero_max_damage"] + 2
+    if game_state["hero_max_damage"] >= game_state["hero_base_max_damage"]:
+        game_state["hero_max_damage"] = game_state["hero_base_max_damage"]
+        game_state.get("game_log").append("Restored max damage")
+    
     if game_state["hero_hp"] >= game_state["hero_max_hp"]:
         game_state["hero_hp"] = game_state["hero_max_hp"]
         game_state.get("game_log").append("Healed to max HP")
+    
 
 def use_precision_strike():
     monster = get_first_alive_monster()
@@ -174,6 +175,12 @@ def monster_attacks_hero(monster):
     append_damage_log("Monster", damage, effective_damage)
     #hack1, restore armor after combo strike
     game_state["hero_armor"] = game_state["hero_base_armor"]
+    if damage > game_state["hero_armor"] and monster["class"] == "Skeleton":
+        game_state["hero_armor"]= game_state["hero_armor"] - 2
+    if damage > game_state["hero_armor"] and monster["class"] == "Skeleton-mage":
+        game_state["hero_max_damage"] = game_state["hero_max_damage"] - 2
+        if game_state["hero_max_damage"] <= game_state["hero_min_damage"]:
+            game_state["hero_max_damage"] = game_state["hero_min_damage"]
 
 def hero_attacks_monster(monster):
     damage = calc_damage(game_state["hero_min_damage"],game_state["hero_max_damage"])

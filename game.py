@@ -48,8 +48,8 @@ def create_monster_packs():
 
 def new_skeleton_mage():
     return {
-    "max_hp" : 20,
-    "hp" : 20,
+    "max_hp" : 10,
+    "hp" : 10,
     "armor" : 2,
     "name" : "Skeleton-mage",
     "class" : "Skeleton-mage",
@@ -61,7 +61,7 @@ def new_skeleton_lich():
     return{
     "max_hp" : 60,
     "hp" : 60,
-    "armor" : 5,
+    "armor" : 18,
     "name": "Skeleton-Lich",
     "class": "Skeleton-Lich",
     "min_damage" : 10,
@@ -178,7 +178,7 @@ def monster_attacks_hero(monster):
     if damage > game_state["hero_armor"] and monster["class"] == "Skeleton":
         game_state["hero_armor"]= game_state["hero_armor"] - 2
     if damage > game_state["hero_armor"] and monster["class"] == "Skeleton-mage":
-        game_state["hero_max_damage"] = game_state["hero_max_damage"] - 2
+        game_state["hero_max_damage"] = game_state["hero_max_damage"] - 5
         if game_state["hero_max_damage"] <= game_state["hero_min_damage"]:
             game_state["hero_max_damage"] = game_state["hero_min_damage"]
 

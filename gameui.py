@@ -9,7 +9,7 @@ from tkinter.scrolledtext import ScrolledText
 
 class Screen:
 
-    def __init__(self, hero_attack, use_heal, game_state, game_restart, use_precision_strike, use_aoe_strike, use_combo_strike):
+    def __init__(self, hero_attack, use_heal, game_state, game_restart, use_precision_strike, use_aoe_strike, use_combo_strike,use_block):
         # state
         self.game_state = game_state
         # hook functions
@@ -19,6 +19,7 @@ class Screen:
         self.use_precision_strike = use_precision_strike
         self.use_aoe_strike = use_aoe_strike
         self.use_combo_strike = use_combo_strike
+        self.use_block = use_block
         # init root with title
         self.root = Tk()
         self.root.title("Diablo dnd edition")
@@ -74,6 +75,10 @@ class Screen:
         self.remember_all_hp_and_pack()
         self.use_combo_strike()
         self.update_components()
+    def on_hero_block(self):
+        self.remember_all_hp_and_pack()
+        self.use_block()
+        self.update_components()
 
     def quit(self):
         self.root.destroy()
@@ -119,8 +124,11 @@ class Screen:
         hero_aoe_strike_button = Button(self.frame, text="AOE Strike", command=self.on_hero_aoe_strike)
         hero_aoe_strike_button.grid(row=6, column=0, columnspan=1)
 
-        hero_aoe_strike_button = Button(self.frame, text="Combo Strike", command=self.on_hero_combo_strike)
-        hero_aoe_strike_button.grid(row=7, column=0, columnspan=1)
+        hero_combo_strike_button = Button(self.frame, text="Combo Strike", command=self.on_hero_combo_strike)
+        hero_combo_strike_button.grid(row=7, column=0, columnspan=1)
+
+        hero_block_button = Button(self.frame, text="Block", command=self.on_hero_block)
+        hero_block_button.grid(row= 1, column=0, columnspan=2)
 
     def draw_status_panels(self):
         self.hero_status = Label(self.frame, text="", font="Arial 14 bold", fg='red')

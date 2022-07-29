@@ -30,9 +30,6 @@ def calc_heal():
 
 def new_game_state():
     state = {
-    # "min_damage": 1,
-    # "max_damage": 15,
-    # "turn": 1,
     "hero_stuned_rounds" : 0,
     "hero_max_hp": 100,
     "hero_hp": 100,
@@ -41,6 +38,7 @@ def new_game_state():
     "hero_base_max_damage": 20,
     "hero_armor": 10,
     "hero_base_armor": 10,
+    "hero_in_block" : False,
     "healing_potions": 5,
     "monster_packs": create_monster_packs(),
     "active_monster_pack_index": 0,
@@ -68,16 +66,16 @@ def create_monster_packs():
     for i in range(10):
         pack = [new_skeleton(), new_skeleton()]
         mage_chance = randint(1,100)
-        if(mage_chance < 20): # 20% of times it's True
+        if(mage_chance < 20): 
             pack[1] = new_skeleton_mage()
             mage_chance = randint(1,100)
             if(mage_chance < 10):
                 pack[0] = new_skeleton_mage()
         lich_chance = randint(1,100)
-        if(lich_chance < (0 + i*10)): # each pack lich chance increased by 5%
+        if(lich_chance < (0 + i*10)):
             pack = [new_skeleton(), new_skeleton_lich()]
             packs.append(pack)
-            break # lich is always end of dungeon, so no more packs needed
+            break 
         packs.append(pack)
     return packs
 
@@ -115,22 +113,27 @@ def switch_to_next_monster_pack():
     game_state["active_monster_pack"] = game_state["monster_packs"][game_state["active_monster_pack_index"]]
     game_state.get("game_log").append("\nNew monsters arrived\n")
 
-def hero_rest():
+def add_healing_potions(count):
+     game_state["healing_potions"] = game_state["healing_potions"] + count
+
+def fortune_rest():
     rest = randint(1 ,100)
-    hero_power_icrease = randint(1, 100)
     if rest <= 60:
+        add_healing_potions(1)
         use_heal()
-        game_state["healing_potions"] = game_state["healing_potions"] + 1
         game_state.get("game_log").append("Fortune:60% luck")
     if rest >= 80:
+        add_healing_potions(2)
         use_heal()
         use_heal()
-        game_state["healing_potions"] = game_state["healing_potions"] + 2
         game_state.get("game_log").append("Fortune:20% luck")
     if rest >= 70 and rest <= 75:
         game_state["hero_hp"] = game_state["hero_max_hp"]
         game_state["hero_max_damage"] = game_state["hero_base_max_damage"]
         game_state.get("game_log").append("Fortune:5% luck")
+
+def power_increase():
+    hero_power_icrease = randint(1, 100)
     if hero_power_icrease <= 50:
         game_state["hero_base_max_damage"] = game_state["hero_base_max_damage"] + 1
         game_state["hero_min_damage"] = game_state["hero_min_damage"] + 1
@@ -138,7 +141,10 @@ def hero_rest():
         game_state["hero_base_max_damage"] = game_state["hero_base_max_damage"] + 2
         game_state["hero_min_damage"] = game_state["hero_min_damage"] + 2
 
-
+def hero_rest():
+    game_state["hero_armor"] = game_state["hero_base_armor"]
+    power_increase()
+    fortune_rest()
 
 def pack_is_dead():
     for monster in game_state["active_monster_pack"]:
@@ -146,10 +152,8 @@ def pack_is_dead():
             return False
     return True
 
-
 def hero_is_dead():
     return game_state["hero_hp"] <= 0
-
 
 def all_packs_are_dead():
     return game_state["active_monster_pack_index"] == len(game_state["monster_packs"])
@@ -157,6 +161,26 @@ def all_packs_are_dead():
 
 def last_pack_active():
     return game_state["active_monster_pack_index"] == len(game_state["monster_packs"]) - 1
+
+def damage_restore():
+    if game_state["hero_max_damage"] >= game_state["hero_base_max_damage"]:
+        game_state["hero_max_damage"] = game_state["hero_base_max_damage"]
+        game_state.get("game_log").append("Restored max damage")
+def armor_restore():
+    if game_state["hero_armor"] >= game_state["hero_base_armor"]:
+        game_state["hero_armor"] = game_state["hero_base_armor"]
+        game_state.get("game_log").append("Restored armor")
+
+def max_hp_heal():
+    if game_state["hero_hp"] >= game_state["hero_max_hp"]:
+        game_state["hero_hp"] = game_state["hero_max_hp"]
+        game_state.get("game_log").append("Healed to max HP")
+def hero_restore():
+    health_points = calc_heal()
+    game_state.get("game_log").append(f"Healing {health_points}")
+    game_state["hero_hp"] = game_state["hero_hp"] + health_points
+    game_state["hero_max_damage"] = game_state["hero_max_damage"] + 4
+    game_state["hero_armor"] = game_state["hero_armor"] * 2
 
 
 def use_heal():
@@ -167,22 +191,10 @@ def use_heal():
         game_state["hero_stuned_rounds"] = 0
         game_state["hero_armor"] = game_state["hero_armor"] * 2
         game_state["hero_max_damage"] = game_state["hero_max_damage"] * 2
-    health_points = calc_heal()
-    game_state.get("game_log").append(f"Healing {health_points}")
-    game_state["hero_hp"] = game_state["hero_hp"] + health_points
-    game_state["hero_max_damage"] = game_state["hero_max_damage"] + 4
-    game_state["hero_armor"] = game_state["hero_armor"] * 2
-    if game_state["hero_max_damage"] >= game_state["hero_base_max_damage"]:
-        game_state["hero_max_damage"] = game_state["hero_base_max_damage"]
-        game_state.get("game_log").append("Restored max damage")
-    if game_state["hero_hp"] >= game_state["hero_max_hp"]:
-        game_state["hero_hp"] = game_state["hero_max_hp"]
-        game_state.get("game_log").append("Healed to max HP")
-    if game_state["hero_armor"] >= game_state["hero_base_armor"]:
-        game_state["hero_armor"] = game_state["hero_base_armor"]
-        game_state.get("game_log").append("Restored armor")
-    
-    
+    hero_restore()
+    damage_restore()
+    max_hp_heal()
+    armor_restore()
 
 def use_precision_strike():
     monster = get_first_alive_monster()
@@ -209,6 +221,7 @@ def use_combo_strike():
     after_hero_turn()
 
 def use_block():
+    game_state["hero_in_block"] = True
     game_state["hero_armor"] = game_state["hero_armor"] + 15   
     after_hero_turn()
 
@@ -227,6 +240,7 @@ def lich_stun():
         game_state["hero_max_damage"] = int(game_state["hero_max_damage"] / 2)
     game_state["hero_stuned_rounds"] = game_state["hero_stuned_rounds"] + 3
 
+
 def hero_is_stunned():
     return game_state["hero_stuned_rounds"] > 0
 
@@ -237,6 +251,9 @@ def monsters_turn_end():
             print("restore damage and armor")
             game_state["hero_armor"] = game_state["hero_armor"] * 2
             game_state["hero_max_damage"] = game_state["hero_max_damage"] * 2
+    if game_state["hero_in_block"]:
+        game_state["hero_in_block"] = False
+        game_state["hero_armor"] = game_state["hero_base_armor"]
 
 def monster_attacks_hero(monster):
     damage = calc_damage(monster['min_damage'],monster ['max_damage'])
@@ -244,8 +261,6 @@ def monster_attacks_hero(monster):
     if effective_damage > 0:
         game_state["hero_hp"] = game_state["hero_hp"] - effective_damage
     append_damage_log("Monster", damage, effective_damage)
-    #hack1, restore armor after combo strike
-    game_state["hero_armor"] = game_state["hero_base_armor"]
     lich_will_stun = randint(1,10) <= 2   
     if lich_will_stun and monster["class"] == "Skeleton-Lich":    
         lich_stun()
@@ -254,8 +269,7 @@ def monster_attacks_hero(monster):
     if damage > game_state["hero_armor"] and monster["class"] == "Skeleton-mage":
         game_state["hero_max_damage"] = game_state["hero_max_damage"] - 5
         if game_state["hero_max_damage"] <= game_state["hero_min_damage"]:
-            game_state["hero_max_damage"] = game_state["hero_min_damage"]
-    
+            game_state["hero_max_damage"] = game_state["hero_min_damage"]  
 
 def hero_attacks_monster(monster):
     damage = calc_damage(game_state["hero_min_damage"],game_state["hero_max_damage"])
@@ -270,7 +284,6 @@ def append_damage_log(attacker, damage, effective_damage):
     else:
         game_state.get("game_log").append(f"{attacker} hit {damage} damage, {effective_damage} passes armor")
 
-
 def ask_for_hero_action():
     return input("Press any key or Q to end the programm. Press H to heal and hit")
 
@@ -283,7 +296,7 @@ def hero_turn():
     return turn % 2 == 1
 
 
-def hero_attack(): # regular attack
+def hero_attack(): 
     attack_first_alive_monster()
     after_hero_turn()
 
@@ -306,9 +319,7 @@ def monster_pack_attack():
                 return
     monsters_turn_end()            
 
-
 def game_restart():
     game_state.update(new_game_state())
-
 
 screen = Screen(hero_attack, use_heal, game_state, game_restart, use_precision_strike, use_aoe_strike, use_combo_strike, use_block)

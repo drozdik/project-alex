@@ -1,6 +1,8 @@
 from random import randint
-
+from typing import List
+from monsters import Monster, SkeletonLich, SkeletonMage
 from gameui import Screen
+
 
 
 def calc_damage(min_damage, max_damage):
@@ -42,7 +44,7 @@ def new_game_state():
     "healing_potions": 5,
     "monster_packs": create_monster_packs(),
     "active_monster_pack_index": 0,
-    "active_monster_pack": None,
+    "active_monster_pack": [Monster(),Monster()],
     "game_log": [],
     "hero_dead": False,
     "monsters_dead": False
@@ -51,17 +53,9 @@ def new_game_state():
     return state
 
 def new_skeleton():
-    return {
-    "max_hp" : 30,
-    "armor" : 3,
-    "hp" : 30,
-    "name" : "Skeleton",
-    "class" : "Skeleton",
-    "min_damage" : 3,
-    "max_damage" : 15
-    }
+    return Monster()
 
-def create_monster_packs():
+def create_monster_packs()-> List[Monster]:
     packs = []
     for i in range(10):
         pack = [new_skeleton(), new_skeleton()]
@@ -80,26 +74,10 @@ def create_monster_packs():
     return packs
 
 def new_skeleton_mage():
-    return {
-    "max_hp" : 10,
-    "hp" : 10,
-    "armor" : 2,
-    "name" : "Skeleton-mage",
-    "class" : "Skeleton-mage",
-    "min_damage" : 10,
-    "max_damage" : 14
-    }
+    return SkeletonMage()
 
 def new_skeleton_lich():
-    return{
-    "max_hp" : 60,
-    "hp" : 60,
-    "armor" : 18,
-    "name": "Skeleton-Lich",
-    "class": "Skeleton-Lich",
-    "min_damage" : 10,
-    "max_damage" : 20
-    }
+    return SkeletonLich()
 
 turn = 1
 
@@ -147,8 +125,8 @@ def hero_rest():
     fortune_rest()
 
 def pack_is_dead():
-    for monster in game_state["active_monster_pack"]:
-        if monster["hp"] > 0:
+    for monster in get_active_monster_pack():
+        if monster.hp > 0:
             return False
     return True
 
@@ -199,17 +177,17 @@ def use_heal():
 def use_precision_strike():
     monster = get_first_alive_monster()
     damage = calc_damage(game_state["hero_min_damage"],game_state["hero_max_damage"]) + 5   
-    monster["hp"] = monster["hp"] - damage
+    monster.hp = monster.hp - damage
     game_state["hero_hp"] = game_state["hero_hp"] - 1
     append_damage_log("Hero", damage, damage)
     after_hero_turn()
 
 def use_aoe_strike():
     damage = calc_damage(game_state["hero_min_damage"], game_state["hero_max_damage"]) - 1
-    for monster in game_state["active_monster_pack"]:
-        effective_damage = damage - monster["armor"]
+    for monster in get_active_monster_pack():
+        effective_damage = damage - monster.armor
         if effective_damage > 0:
-            monster["hp"] = monster["hp"] - effective_damage
+            monster.hp = monster.hp - effective_damage
         append_damage_log("Hero", damage, effective_damage)
     after_hero_turn()
 
@@ -229,9 +207,12 @@ def attack_first_alive_monster():
     monster = get_first_alive_monster()
     hero_attacks_monster(monster)
 
+def get_active_monster_pack()-> List[Monster]:
+    return game_state["active_monster_pack"]
+
 def get_first_alive_monster():
-    for monster in game_state["active_monster_pack"]:
-        if monster["hp"] > 0:
+    for monster in get_active_monster_pack():
+        if monster.hp > 0:
             return monster
 
 def lich_stun():
@@ -255,27 +236,27 @@ def monsters_turn_end():
         game_state["hero_in_block"] = False
         game_state["hero_armor"] = game_state["hero_base_armor"]
 
-def monster_attacks_hero(monster):
-    damage = calc_damage(monster['min_damage'],monster ['max_damage'])
+def monster_attacks_hero(monster:Monster):
+    damage = calc_damage(monster.min_damage, monster.max_damage)
     effective_damage = damage - game_state["hero_armor"]
     if effective_damage > 0:
         game_state["hero_hp"] = game_state["hero_hp"] - effective_damage
     append_damage_log("Monster", damage, effective_damage)
     lich_will_stun = randint(1,10) <= 2   
-    if lich_will_stun and monster["class"] == "Skeleton-Lich":    
+    if lich_will_stun and monster.clazz == "Skeleton-Lich":    
         lich_stun()
-    if damage > game_state["hero_armor"] and monster["class"] == "Skeleton":
+    if damage > game_state["hero_armor"] and monster.clazz == "Skeleton":
         game_state["hero_armor"]= game_state["hero_armor"] - 2
-    if damage > game_state["hero_armor"] and monster["class"] == "Skeleton-mage":
+    if damage > game_state["hero_armor"] and monster.clazz == "Skeleton-mage":
         game_state["hero_max_damage"] = game_state["hero_max_damage"] - 5
         if game_state["hero_max_damage"] <= game_state["hero_min_damage"]:
             game_state["hero_max_damage"] = game_state["hero_min_damage"]  
 
-def hero_attacks_monster(monster):
+def hero_attacks_monster(monster:Monster):
     damage = calc_damage(game_state["hero_min_damage"],game_state["hero_max_damage"])
-    effective_damage = damage - monster["armor"]
+    effective_damage = damage - monster.armor
     if effective_damage > 0:
-        monster["hp"] = monster["hp"] - effective_damage
+        monster.hp = monster.hp - effective_damage
     append_damage_log("Hero", damage, effective_damage)
 
 def append_damage_log(attacker, damage, effective_damage):
@@ -311,8 +292,8 @@ def after_hero_turn():
 
 
 def monster_pack_attack():
-    for monster in game_state["active_monster_pack"]:
-        if monster["hp"] > 0:
+    for monster in get_active_monster_pack():
+        if monster.hp > 0:
             monster_attacks_hero(monster)
             if hero_is_dead():
                 game_state["hero_dead"] = True

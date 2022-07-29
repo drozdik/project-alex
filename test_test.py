@@ -1,15 +1,21 @@
+from random import randint
 
 
-from unicodedata import name
+class MyMonster:
+    
+    hp = 10
+    def alive():
+        if MyMonster.damage >= MyMonster.hp:
+            return False
+        else:
+            return True
+    def dead():
+        if MyMonster.damage >= MyMonster.hp:
+            return True
+        else:
+            return False
 
-
-a = {
-    "min_damage" : 2,
-    "max_damage" : 4
-}
-name = "alex"
-name2 = "Vova"
-names = f"{name} and {name2}"
-text = f'lalala,{names}'
-text2 = f"monster damage:{a['min_damage']} - {a['max_damage']}"
-print(text)
+damage = randint(5,15)
+m1 = MyMonster()
+m1.hp = m1.hp - damage
+print("damage:",damage,"Alive:",MyMonster.alive(),"Dead:",MyMonster.dead())

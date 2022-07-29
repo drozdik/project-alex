@@ -1,10 +1,13 @@
 from cgitb import text
 import tkinter
 from tkinter import *
+from monsters import Monster
 
 
 from PIL import ImageTk, Image
 from tkinter.scrolledtext import ScrolledText
+
+
 
 
 class Screen:
@@ -162,20 +165,20 @@ class Screen:
         text = f"{class_row}\n{hp_row}\n{armor_row}\n{damage_row}\n{healing_potions_row}"
         return text
     
-    def get_monster_image(self, monster):
+    def get_monster_image(self, monster:Monster):
         monster_image = self.skeleton_image
-        if monster["class"] == "Skeleton-mage":
+        if monster.clazz == "Skeleton-mage":
             monster_image = self.skeleton_mage_image
-        elif monster["class"] == "Skeleton-Lich":
+        elif monster.clazz == "Skeleton-Lich":
             monster_image = self.skeleton_lich_image
         return monster_image
 
-    def get_monster_text(self,monster):
-        monster_name = monster["class"]
-        monster_hp = monster["hp"]
-        monster_armor = monster["armor"]
-        monster_min_damage = monster["min_damage"]
-        monster_max_damage = monster["max_damage"]
+    def get_monster_text(self,monster:Monster):
+        monster_name = monster.clazz
+        monster_hp = monster.hp
+        monster_armor = monster.armor
+        monster_min_damage = monster.min_damage
+        monster_max_damage = monster.max_damage
         monster_damage = f"Damage:{monster_min_damage} - {monster_max_damage}"
 
         text = f"Class:{monster_name}\nHealtn:{monster_hp}\nArmor:{monster_armor}\n{monster_damage}"
@@ -262,10 +265,10 @@ class Screen:
         return self.game_state.get('hero_hp')
 
     def get_monster1_hp(self):
-        return self.game_state["active_monster_pack"][0]["hp"]
+        return self.game_state["active_monster_pack"][0].hp
 
     def get_monster2_hp(self):
-        return self.game_state["active_monster_pack"][1]["hp"]
+        return self.game_state["active_monster_pack"][1].hp
 
     def get_active_monster_pack(self):
         return self.game_state["active_monster_pack"]

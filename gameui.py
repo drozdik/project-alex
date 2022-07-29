@@ -46,7 +46,7 @@ class Screen:
         for log in self.game_state.get("game_log"):
             log_content += log + "\n"
         self.log_panel = ScrolledText(self.frame, width=80,  height=15)
-        self.log_panel.grid(row=8, column=0, columnspan=3)
+        self.log_panel.grid(row=13, column=0, columnspan=4)
         self.log_panel.insert(INSERT, log_content)
         self.log_panel.configure(state ='disabled')
         self.log_panel.see("end")
@@ -103,40 +103,42 @@ class Screen:
     # images and buttons
     def draw_images_and_buttons(self):
         self.knight_image_label = Label(self.frame, image=self.knight_image)
-        self.knight_image_label.grid(row=1, column=0, columnspan=1)
+        self.knight_image_label.grid(row=1, column=1, rowspan=10)
         monster1_image = self.get_monster_image(self.game_state["active_monster_pack"][0])
         self.monster1_image_label = Label(self.frame, image=monster1_image)
-        self.monster1_image_label.grid(row=1, column=1, columnspan=1)
+        self.monster1_image_label.grid(row=1, column=2, rowspan=10)
 
         monster2_image = self.get_monster_image(self.game_state["active_monster_pack"][1])
         self.monster2_image_label = Label(self.frame, image=monster2_image)
-        self.monster2_image_label.grid(row=1, column=2, columnspan=1)
+        self.monster2_image_label.grid(row=1, column=3, rowspan=10)
 
         hero_attack_button = Button(self.frame, text="Attack and finish turn", command=self.on_hero_attack)
-        hero_attack_button.grid(row=3, column=0, columnspan=1)
+        hero_attack_button.grid(row=1, column=0, columnspan=1)
 
         self.hero_heal_button = Button(self.frame, text="Heal", command=self.on_hero_heal)
-        self.hero_heal_button.grid(row=4, column=0, columnspan=1)
+        self.hero_heal_button.grid(row=2, column=0, columnspan=1)
 
         hero_precision_strike_button = Button(self.frame, text="Precision Strike", command=self.on_hero_precision_strike)
-        hero_precision_strike_button.grid(row=5, column=0, columnspan=1)
+        hero_precision_strike_button.grid(row=3, column=0, columnspan=1)
 
         hero_aoe_strike_button = Button(self.frame, text="AOE Strike", command=self.on_hero_aoe_strike)
-        hero_aoe_strike_button.grid(row=6, column=0, columnspan=1)
+        hero_aoe_strike_button.grid(row=4, column=0, columnspan=1)
 
         hero_combo_strike_button = Button(self.frame, text="Combo Strike", command=self.on_hero_combo_strike)
-        hero_combo_strike_button.grid(row=7, column=0, columnspan=1)
+        hero_combo_strike_button.grid(row=5, column=0, columnspan=1)
 
         hero_block_button = Button(self.frame, text="Block", command=self.on_hero_block)
-        hero_block_button.grid(row= 1, column=0, columnspan=2)
+        hero_block_button.grid(row=6, column=0, columnspan=1)
+        #for i in range(4): #uncomment to show available button positions
+        #    Button(self.frame, text=f"Button {i}").grid(row=6+1+i, column=0)
 
     def draw_status_panels(self):
         self.hero_status = Label(self.frame, text="", font="Arial 14 bold", fg='red')
-        self.hero_status.grid(row=0, column=0, columnspan=1)
+        self.hero_status.grid(row=0, column=1, columnspan=1)
         self.monster1_status = Label(self.frame, text="", font="Arial 14 bold", fg='red')
-        self.monster1_status.grid(row=0, column=1, columnspan=1)
+        self.monster1_status.grid(row=0, column=2, columnspan=1)
         self.monster2_status = Label(self.frame, text="", font="Arial 14 bold", fg='red')
-        self.monster2_status.grid(row=0, column=2, columnspan=1)
+        self.monster2_status.grid(row=0, column=3, columnspan=1)
 
     def draw_game_over_components(self, text="Game Over."):
         l_game_over = Label(self.frame, text=text)
@@ -240,15 +242,15 @@ class Screen:
         self.hero_health_label = Label(self.frame,
                                 text = self.get_hero_text(),
                                 font=("Arial", 14))
-        self.hero_health_label.grid(row=2, column=0)
+        self.hero_health_label.grid(row=12, column=1)
 
         monster1 = self.game_state['active_monster_pack'][0] # it's dictionary now
         self.monster_1_health_label = Label(self.frame, text=self.get_monster_text(monster1),font=("Arial", 14))
-        self.monster_1_health_label.grid(row=2, column=1)
+        self.monster_1_health_label.grid(row=12, column=2)
 
         monster2 = self.game_state['active_monster_pack'][1] # it's dictionary now
         self.monster_2_health_label = Label(self.frame, text=self.get_monster_text(monster2),font=("Arial", 14))
-        self.monster_2_health_label.grid(row=2, column=2)
+        self.monster_2_health_label.grid(row=12, column=3)
 
     def remember_all_hp_and_pack(self):
         self.hero_hp = self.get_hero_hp()

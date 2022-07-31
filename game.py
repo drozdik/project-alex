@@ -237,27 +237,13 @@ def monsters_turn_end():
         game_state["hero_armor"] = game_state["hero_base_armor"]
 
 def monster_attacks_hero(monster:Monster):
-    damage = calc_damage(monster.min_damage, monster.max_damage)
-    effective_damage = damage - game_state["hero_armor"]
-    if effective_damage > 0:
-        game_state["hero_hp"] = game_state["hero_hp"] - effective_damage
-    append_damage_log("Monster", damage, effective_damage)
-    lich_will_stun = randint(1,10) <= 2   
-    if lich_will_stun and monster.clazz == "Skeleton-Lich":    
-        lich_stun()
-    if damage > game_state["hero_armor"] and monster.clazz == "Skeleton":
-        game_state["hero_armor"]= game_state["hero_armor"] - 2
-    if damage > game_state["hero_armor"] and monster.clazz == "Skeleton-mage":
-        game_state["hero_max_damage"] = game_state["hero_max_damage"] - 5
-        if game_state["hero_max_damage"] <= game_state["hero_min_damage"]:
-            game_state["hero_max_damage"] = game_state["hero_min_damage"]  
+    damages = monster.deal_damage(calc_damage, game_state)
+    append_damage_log("Monster", damages[0], damages[1])
 
 def hero_attacks_monster(monster:Monster):
     damage = calc_damage(game_state["hero_min_damage"],game_state["hero_max_damage"])
-    effective_damage = damage - monster.armor
-    if effective_damage > 0:
-        monster.hp = monster.hp - effective_damage
-    append_damage_log("Hero", damage, effective_damage)
+    damages = monster.take_damage(damage)
+    append_damage_log("Hero", damages[0], damages[1])
 
 def append_damage_log(attacker, damage, effective_damage):
     if(effective_damage <= 0):

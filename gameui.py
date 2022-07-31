@@ -48,7 +48,7 @@ class Screen:
         log_content = ""
         for log in self.game_state.get("game_log"):
             log_content += log + "\n"
-        self.log_panel = ScrolledText(self.frame, width=80,  height=15)
+        self.log_panel = ScrolledText(self.frame, width=80,  height=6)
         self.log_panel.grid(row=13, column=0, columnspan=4)
         self.log_panel.insert(INSERT, log_content)
         self.log_panel.configure(state ='disabled')

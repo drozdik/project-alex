@@ -1,6 +1,6 @@
 from random import randint
 from typing import List
-from monsters import Monster, SkeletonLich, SkeletonMage
+from monsters import Monster, Skeleton, SkeletonLich, SkeletonMage
 from gameui import Screen
 
 
@@ -53,7 +53,7 @@ def new_game_state():
     return state
 
 def new_skeleton():
-    return Monster()
+    return Skeleton()
 
 def create_monster_packs()-> List[Monster]:
     packs = []

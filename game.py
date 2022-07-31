@@ -126,7 +126,7 @@ def hero_rest():
 
 def pack_is_dead():
     for monster in get_active_monster_pack():
-        if Monster.alive(self= monster):
+        if monster.alive():
             return False
     return True
 
@@ -212,7 +212,7 @@ def get_active_monster_pack()-> List[Monster]:
 
 def get_first_alive_monster():
     for monster in get_active_monster_pack():
-        if Monster.alive(self= monster):
+        if monster.alive():
             return monster
 
 def lich_stun():
@@ -293,7 +293,7 @@ def after_hero_turn():
 
 def monster_pack_attack():
     for monster in get_active_monster_pack():
-        if Monster.alive(self=monster):
+        if monster.alive():
             monster_attacks_hero(monster)
             if hero_is_dead():
                 game_state["hero_dead"] = True

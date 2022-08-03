@@ -1,5 +1,6 @@
 from cgitb import text
 import tkinter
+from queue import Queue
 from tkinter import *
 from monsters import Monster
 
@@ -12,7 +13,7 @@ from tkinter.scrolledtext import ScrolledText
 
 class Screen:
 
-    def __init__(self, hero_attack, use_heal, game_state, game_restart, use_precision_strike, use_aoe_strike, use_combo_strike,use_block):
+    def __init__(self, hero_attack, use_heal, game_state, game_restart, use_precision_strike, use_aoe_strike, use_combo_strike,use_block, queue:Queue):
         # state
         self.game_state = game_state
         # hook functions
@@ -23,6 +24,7 @@ class Screen:
         self.use_aoe_strike = use_aoe_strike
         self.use_combo_strike = use_combo_strike
         self.use_block = use_block
+        self.queue = queue
         # init root with title
         self.root = Tk()
         self.root.title("Diablo dnd edition")
@@ -56,7 +58,8 @@ class Screen:
 
     def on_hero_attack(self):
         self.remember_all_hp_and_pack()
-        self.hero_attack()  # calls action from the Game
+        # self.hero_attack()  # calls action from the Game
+        self.queue.put("hero_attack")
 
     def on_hero_heal(self):
         self.remember_all_hp_and_pack()
@@ -154,7 +157,7 @@ class Screen:
         self.frame.destroy()
         self.frame = tkinter.Frame(self.root)
         self.frame.grid()
-    
+
     def get_hero_text(self):
         hp_row = f"Health: {self.game_state.get('hero_hp')}/{self.game_state.get('hero_max_hp')}"
         class_row = f"Class: Knight"
@@ -163,7 +166,7 @@ class Screen:
         healing_potions_row = f"Potions: {self.game_state.get('healing_potions')}"
         text = f"{class_row}\n{hp_row}\n{armor_row}\n{damage_row}\n{healing_potions_row}"
         return text
-    
+
     def get_monster_image(self, monster:Monster):
         monster_image = self.skeleton_image
         if monster.clazz == "Skeleton-mage":
@@ -207,7 +210,7 @@ class Screen:
         monster2 = self.game_state['active_monster_pack'][1] # it's dictionary now
         monster2_text = self.get_monster_text(monster2)
         self.monster_2_health_label.config(text= monster2_text,font=("Arial", 14))
-                                        
+
         # update log panel
         log_content = ""
         for log in self.game_state.get("game_log"):

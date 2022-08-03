@@ -1,5 +1,6 @@
 import threading
 import time
+from queue import Queue
 from random import randint
 from typing import List
 from monsters import Monster, Skeleton, SkeletonLich, SkeletonMage
@@ -310,17 +311,22 @@ def ask_for_monster_turn():
 def hero_turn():
     return turn % 2 == 1
 
-
+# let's make this method called from thread when it picks event from queue
 def hero_attack():
+    print("Starting thread for attack")
     thread = threading.Thread(target=hero_attack_inside, args=[screen])
     thread.start()
 
 
 def hero_attack_inside(screen: Screen):
+    print("Inside hero attack")
     attack_first_alive_monster()
     after_hero_turn()
+    print("Updating statuses")
     screen.update_components()
+    print("Sleeping one sec")
     time.sleep(1)
+    print("Clearing statuses")
     screen.clear_statuses()
 
 
@@ -346,5 +352,22 @@ def monster_pack_attack():
 def game_restart():
     game_state.update(new_game_state())
 
-screen = Screen(hero_attack, use_heal, game_state, game_restart, use_precision_strike, use_aoe_strike, use_combo_strike, use_block)
+
+queue = Queue()
+screen = Screen(hero_attack, use_heal, game_state, game_restart, use_precision_strike, use_aoe_strike, use_combo_strike, use_block, queue)
+
+
+def watch_queue(queue:Queue, hero_attack_inside, screen:Screen):
+    while True:
+        if not queue.empty():
+            event = queue.get()
+            print(f"picked event {event}")
+            hero_attack_inside(screen)
+
+
+# start queue watcher thread here
+queue_watcher = threading.Thread(target=watch_queue, args=[queue, hero_attack_inside, screen])
+queue_watcher.setDaemon(True)
+queue_watcher.start()
+
 screen.start()

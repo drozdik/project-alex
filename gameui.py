@@ -40,9 +40,9 @@ class Screen:
         self.draw_health_panels()
         self.draw_log_panel()
 
+    def start(self):
         # start UI
         self.root.mainloop()
-
 
     def draw_log_panel(self):
         log_content = ""
@@ -57,7 +57,6 @@ class Screen:
     def on_hero_attack(self):
         self.remember_all_hp_and_pack()
         self.hero_attack()  # calls action from the Game
-        self.update_components()
 
     def on_hero_heal(self):
         self.remember_all_hp_and_pack()
@@ -226,9 +225,7 @@ class Screen:
         self.update_status_labels()
 
     def update_status_labels(self):
-        self.hero_status.config(text="")
-        self.monster1_status.config(text="")
-        self.monster2_status.config(text="")
+        self.clear_statuses()
         if(self.monster_pack != self.get_active_monster_pack()):
             # pack changed, leave empty statuses
             return
@@ -240,7 +237,11 @@ class Screen:
         if self.monster2_hp != self.get_monster2_hp():
             self.monster2_status.config(text=f"{self.get_monster2_hp() - self.monster2_hp}")
 
-        
+    def clear_statuses(self):
+        self.hero_status.config(text="")
+        self.monster1_status.config(text="")
+        self.monster2_status.config(text="")
+
     def draw_health_panels(self):
         self.hero_health_label = Label(self.frame,
                                 text = self.get_hero_text(),

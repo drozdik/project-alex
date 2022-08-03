@@ -1,8 +1,11 @@
+import threading
+import time
 from random import randint
 from typing import List
 from monsters import Monster, Skeleton, SkeletonLich, SkeletonMage
 from gameui import Screen
 
+screen = None
 
 
 def calc_damage(min_damage, max_damage):
@@ -28,7 +31,7 @@ def calc_heal():
     if luck == 10:
         game_state.get("game_log").append("God loves you")
         health_points = health_points * 2
-    return health_points       
+    return health_points
 
 def new_game_state():
     state = {
@@ -60,7 +63,7 @@ def create_monster_packs()-> List[Monster]:
     for i in range(10):
         pack = [new_skeleton(), new_skeleton()]
         mage_chance = randint(1,100)
-        if(mage_chance < 20): 
+        if(mage_chance < 20):
             pack[1] = new_skeleton_mage()
             mage_chance = randint(1,100)
             if(mage_chance < 10):
@@ -69,7 +72,7 @@ def create_monster_packs()-> List[Monster]:
         if(lich_chance < (0 + i*10)):
             pack = [new_skeleton(), new_skeleton_lich()]
             packs.append(pack)
-            break 
+            break
         packs.append(pack)
     return packs
 
@@ -162,6 +165,11 @@ def hero_restore():
 
 
 def use_heal():
+    thread = threading.Thread(target=use_heal_inside, args=[screen])
+    thread.start()
+
+
+def use_heal_inside(screen: Screen):
     if(game_state["healing_potions"] <= 0):
         raise Exception("No healing potions")
     game_state['healing_potions'] -= 1
@@ -173,16 +181,34 @@ def use_heal():
     damage_restore()
     max_hp_heal()
     armor_restore()
+    screen.update_components()
+    time.sleep(1)
+    screen.clear_statuses()
+
 
 def use_precision_strike():
+    thread = threading.Thread(target=use_precision_strike_inside, args=[screen])
+    thread.start()
+
+
+def use_precision_strike_inside(screen: Screen):
     monster = get_first_alive_monster()
-    damage = calc_damage(game_state["hero_min_damage"],game_state["hero_max_damage"]) + 5   
+    damage = calc_damage(game_state["hero_min_damage"],game_state["hero_max_damage"]) + 5
     monster.hp = monster.hp - damage
     game_state["hero_hp"] = game_state["hero_hp"] - 1
     append_damage_log("Hero", damage, damage)
     after_hero_turn()
+    screen.update_components()
+    time.sleep(1)
+    screen.clear_statuses()
+
 
 def use_aoe_strike():
+    thread = threading.Thread(target=use_aoe_strike_inside, args=[screen])
+    thread.start()
+
+
+def use_aoe_strike_inside(screen:Screen):
     damage = calc_damage(game_state["hero_min_damage"], game_state["hero_max_damage"]) - 1
     for monster in get_active_monster_pack():
         effective_damage = damage - monster.armor
@@ -190,18 +216,40 @@ def use_aoe_strike():
             monster.hp = monster.hp - effective_damage
         append_damage_log("Hero", damage, effective_damage)
     after_hero_turn()
+    screen.update_components()
+    time.sleep(1)
+    screen.clear_statuses()
+
 
 def use_combo_strike():
+    thread = threading.Thread(target=use_combo_strike_inside, args=[screen])
+    thread.start()
+
+
+def use_combo_strike_inside(screen:Screen):
     monster = get_first_alive_monster()
     hero_attacks_monster(monster)
     hero_attacks_monster(monster)
     game_state["hero_armor"] = game_state["hero_armor"] - 5
     after_hero_turn()
+    screen.update_components()
+    time.sleep(1)
+    screen.clear_statuses()
+
 
 def use_block():
+    thread = threading.Thread(target=use_block_inside, args=[screen])
+    thread.start()
+
+
+def use_block_inside(screen:Screen):
     game_state["hero_in_block"] = True
-    game_state["hero_armor"] = game_state["hero_armor"] + 15   
+    game_state["hero_armor"] = game_state["hero_armor"] + 15
     after_hero_turn()
+    screen.update_components()
+    time.sleep(1)
+    screen.clear_statuses()
+
 
 def attack_first_alive_monster():
     monster = get_first_alive_monster()
@@ -263,9 +311,18 @@ def hero_turn():
     return turn % 2 == 1
 
 
-def hero_attack(): 
+def hero_attack():
+    thread = threading.Thread(target=hero_attack_inside, args=[screen])
+    thread.start()
+
+
+def hero_attack_inside(screen: Screen):
     attack_first_alive_monster()
     after_hero_turn()
+    screen.update_components()
+    time.sleep(1)
+    screen.clear_statuses()
+
 
 def after_hero_turn():
     if pack_is_dead():
@@ -284,9 +341,10 @@ def monster_pack_attack():
             if hero_is_dead():
                 game_state["hero_dead"] = True
                 return
-    monsters_turn_end()            
+    monsters_turn_end()
 
 def game_restart():
     game_state.update(new_game_state())
 
 screen = Screen(hero_attack, use_heal, game_state, game_restart, use_precision_strike, use_aoe_strike, use_combo_strike, use_block)
+screen.start()

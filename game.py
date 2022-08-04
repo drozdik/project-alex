@@ -166,11 +166,6 @@ def hero_restore():
 
 
 def use_heal():
-    thread = threading.Thread(target=use_heal_inside, args=[screen])
-    thread.start()
-
-
-def use_heal_inside(screen: Screen):
     if(game_state["healing_potions"] <= 0):
         raise Exception("No healing potions")
     game_state['healing_potions'] -= 1
@@ -182,14 +177,12 @@ def use_heal_inside(screen: Screen):
     damage_restore()
     max_hp_heal()
     armor_restore()
+
+def use_heal_inside(screen: Screen):
+    use_heal()
     screen.update_components()
     time.sleep(1)
     screen.clear_statuses()
-
-
-def use_precision_strike():
-    thread = threading.Thread(target=use_precision_strike_inside, args=[screen])
-    thread.start()
 
 
 def use_precision_strike_inside(screen: Screen):
@@ -202,11 +195,6 @@ def use_precision_strike_inside(screen: Screen):
     screen.update_components()
     time.sleep(1)
     screen.clear_statuses()
-
-
-def use_aoe_strike():
-    thread = threading.Thread(target=use_aoe_strike_inside, args=[screen])
-    thread.start()
 
 
 def use_aoe_strike_inside(screen:Screen):
@@ -222,11 +210,6 @@ def use_aoe_strike_inside(screen:Screen):
     screen.clear_statuses()
 
 
-def use_combo_strike():
-    thread = threading.Thread(target=use_combo_strike_inside, args=[screen])
-    thread.start()
-
-
 def use_combo_strike_inside(screen:Screen):
     monster = get_first_alive_monster()
     hero_attacks_monster(monster)
@@ -236,11 +219,6 @@ def use_combo_strike_inside(screen:Screen):
     screen.update_components()
     time.sleep(1)
     screen.clear_statuses()
-
-
-def use_block():
-    thread = threading.Thread(target=use_block_inside, args=[screen])
-    thread.start()
 
 
 def use_block_inside(screen:Screen):
@@ -354,19 +332,38 @@ def game_restart():
 
 
 queue = Queue()
-screen = Screen(hero_attack, use_heal, game_state, game_restart, use_precision_strike, use_aoe_strike, use_combo_strike, use_block, queue)
+screen = Screen(hero_attack, None, game_state, game_restart, None, None, None, None, queue)
 
 
-def watch_queue(queue:Queue, hero_attack_inside, screen:Screen):
+def watch_queue(queue:Queue, hero_attack_inside, use_heal_inside, use_precision_strike_inside, use_aoe_strike_inside,
+                use_combo_strike_inside,
+                use_block_inside,
+                screen:Screen):
     while True:
         if not queue.empty():
             event = queue.get()
             print(f"picked event {event}")
-            hero_attack_inside(screen)
+            if event == "hero_attack":
+                hero_attack_inside(screen)
+            elif event == "hero_heal":
+                use_heal_inside(screen)
+            elif event == "precision_strike":
+                use_precision_strike_inside(screen)
+            elif event == "aoe_strike":
+                use_aoe_strike_inside(screen)
+            elif event == "combo_strike":
+                use_combo_strike_inside(screen)
+            elif event == "block":
+                use_block_inside(screen)
+
 
 
 # start queue watcher thread here
-queue_watcher = threading.Thread(target=watch_queue, args=[queue, hero_attack_inside, screen])
+queue_watcher = threading.Thread(target=watch_queue,
+                                 args=[queue, hero_attack_inside, use_heal_inside, use_precision_strike_inside, use_aoe_strike_inside,
+                                       use_combo_strike_inside,
+                                       use_block_inside,
+                                       screen])
 queue_watcher.setDaemon(True)
 queue_watcher.start()
 

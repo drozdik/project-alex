@@ -63,27 +63,23 @@ class Screen:
 
     def on_hero_heal(self):
         self.remember_all_hp_and_pack()
-        self.use_heal()
-        self.update_components()
+        self.queue.put("hero_heal")
 
     def on_hero_precision_strike(self):
         self.remember_all_hp_and_pack()
-        self.use_precision_strike()
-        self.update_components()
+        self.queue.put("precision_strike")
 
     def on_hero_aoe_strike(self):
         self.remember_all_hp_and_pack()
-        self.use_aoe_strike()
-        self.update_components()
+        self.queue.put("aoe_strike")
 
     def on_hero_combo_strike(self):
         self.remember_all_hp_and_pack()
-        self.use_combo_strike()
-        self.update_components()
+        self.queue.put("combo_strike")
+
     def on_hero_block(self):
         self.remember_all_hp_and_pack()
-        self.use_block()
-        self.update_components()
+        self.queue.put("block")
 
     def quit(self):
         self.root.destroy()

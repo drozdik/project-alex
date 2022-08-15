@@ -7,6 +7,7 @@ from monsters import Monster, Skeleton, SkeletonLich, SkeletonMage
 from gameui import Screen
 
 screen = None
+screenHolder = {"screen":screen}
 
 
 def calc_damage(min_damage, max_damage):
@@ -48,7 +49,7 @@ def new_game_state():
     "healing_potions": 5,
     "monster_packs": create_monster_packs(),
     "active_monster_pack_index": 0,
-    "active_monster_pack": [Monster(),Monster()],
+    "active_monster_pack": [Monster(screen),Monster(screen)],
     "game_log": [],
     "hero_dead": False,
     "monsters_dead": False
@@ -57,7 +58,7 @@ def new_game_state():
     return state
 
 def new_skeleton():
-    return Skeleton()
+    return Skeleton(screenHolder)
 
 def create_monster_packs()-> List[Monster]:
     packs = []
@@ -78,10 +79,10 @@ def create_monster_packs()-> List[Monster]:
     return packs
 
 def new_skeleton_mage():
-    return SkeletonMage()
+    return SkeletonMage(screen)
 
 def new_skeleton_lich():
-    return SkeletonLich()
+    return SkeletonLich(screen)
 
 turn = 1
 
@@ -263,20 +264,30 @@ def monsters_turn_end():
         game_state["hero_in_block"] = False
         game_state["hero_armor"] = game_state["hero_base_armor"]
 
-def monster_attacks_hero(monster:Monster):
+def monster_attacks_hero(monster:Monster,screen:Screen = None):
+    time.sleep(0.2)
+    screen.show_monster_attacks(monster)
+    print(f'outside screen is {screen}')
+    monster.screen = screen
     damages = monster.deal_damage(calc_damage, game_state)
     append_damage_log("Monster", damages[0], damages[1])
+    effective_damage = damages[1]
+    screen.show_hero_hp_changed(min(0, 0 - effective_damage))
 
 def hero_attacks_monster(monster:Monster):
+    screen.show_hero_attacks() # view processing hero_attacked event
     damage = calc_damage(game_state["hero_min_damage"],game_state["hero_max_damage"])
     damages = monster.take_damage(damage)
     append_damage_log("Hero", damages[0], damages[1])
+    effective_damage = damages[1]
+    screen.show_monster_hp_changed(monster, 0-effective_damage) # view processing monster_hp_changed
 
 def append_damage_log(attacker, damage, effective_damage):
     if(effective_damage <= 0):
         game_state.get("game_log").append(f"{attacker} hit {damage} damage, all absorbed")
     else:
         game_state.get("game_log").append(f"{attacker} hit {damage} damage, {effective_damage} passes armor")
+    screen.show_updated_log()
 
 def ask_for_hero_action():
     return input("Press any key or Q to end the programm. Press H to heal and hit")
@@ -290,38 +301,34 @@ def hero_turn():
     return turn % 2 == 1
 
 # let's make this method called from thread when it picks event from queue
-def hero_attack():
-    print("Starting thread for attack")
-    thread = threading.Thread(target=hero_attack_inside, args=[screen])
-    thread.start()
 
 
 def hero_attack_inside(screen: Screen):
-    print("Inside hero attack")
     attack_first_alive_monster()
-    after_hero_turn()
-    print("Updating statuses")
-    screen.update_components()
+    # show that hero attacks
+    after_hero_turn(screen)
+    print("Updating hero statuses")
+    # screen.update_components()
     print("Sleeping one sec")
-    time.sleep(1)
+    # time.sleep(1)
     print("Clearing statuses")
-    screen.clear_statuses()
+    # screen.clear_statuses()
 
 
-def after_hero_turn():
+def after_hero_turn(screen:Screen = None):
     if pack_is_dead():
         hero_rest()
         if last_pack_active():
             game_state["monsters_dead"] = True
             return
         switch_to_next_monster_pack()
-    monster_pack_attack()
+    monster_pack_attack(screen)
 
 
-def monster_pack_attack():
+def monster_pack_attack(screen:Screen = None):
     for monster in get_active_monster_pack():
         if monster.alive():
-            monster_attacks_hero(monster)
+            monster_attacks_hero(monster, screen)
             if hero_is_dead():
                 game_state["hero_dead"] = True
                 return
@@ -332,7 +339,8 @@ def game_restart():
 
 
 queue = Queue()
-screen = Screen(hero_attack, None, game_state, game_restart, None, None, None, None, queue)
+screen = Screen(None, None, game_state, game_restart, None, None, None, None, queue)
+screenHolder["screen"]=screen
 
 
 def watch_queue(queue:Queue, hero_attack_inside, use_heal_inside, use_precision_strike_inside, use_aoe_strike_inside,

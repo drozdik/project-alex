@@ -1,31 +1,35 @@
-from random import *
-import time
+class A:
+    def __init__(self, data):
+        self.data = data
+
+    def stuff(self):
+        self.data.check_data()
 
 
-class PokerPlayer:
-    clothes = []
-
-    def __init__(self, name, clothes) -> None:
-        self.name = name
-        self.clothes = clothes
-
-    def on_lose(self):
-        remained = len(self.clothes)
-        removed = self.clothes.pop(randrange(remained))
-        if len(self.clothes) == 0:
-            print(f"{self.name} проиграл(а) скинув {removed} последним")
-            quit()
-        print(f"{self.name} скидывает {removed}")
-        return removed
+class B(A):
+    def stuff_b(self):
+        print(f'data is {self.data}')
 
 
-goth_girl = PokerPlayer("Готка", ["Цепи", "Черная юбка", "Армейские ботинки", "Кожаный топ с кнопками"])
-school_girl = PokerPlayer("Наташа", ["Клетчатая короткая юбка", "Чюлки", "Белая блузка", "Боты на платформе"])
-boobs_girl = PokerPlayer("Анфиса", ["Лифчки D+", "Стринги", "Красные туфли на шпильках", "Подвязка"])
-alex = PokerPlayer("Саня", ["Кожанка", "Кроссы", "Трусы красные в белый горошек"])
+class MyData:
+    def check_data(self):
+        print('data is ok')
 
-players = [goth_girl, school_girl, boobs_girl, alex]
 
-while True:
-    players[randrange(4)].on_lose()
-    time.sleep(1.3)
+# d = None
+# d = MyData()
+# print(d)
+# b = B(d)
+# b.data = MyData(
+# b.stuff_b()
+# d = MyData()
+# print(d)
+# b.stuff_b()
+a = MyData()
+print(f"a is {a}")
+b = a
+print(f"b is {b}")
+print("change a")
+a = MyData()
+print(f"a is {a}")
+print(f"b is {b}")

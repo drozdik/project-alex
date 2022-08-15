@@ -1,3 +1,4 @@
+import time
 from cgitb import text
 import tkinter
 from queue import Queue
@@ -207,6 +208,24 @@ class Screen:
         monster2_text = self.get_monster_text(monster2)
         self.monster_2_health_label.config(text= monster2_text,font=("Arial", 14))
 
+        # update monster images
+        monster1_image = self.get_monster_image(self.game_state["active_monster_pack"][0])
+        self.monster1_image_label.config(image=monster1_image)
+
+        monster2_image = self.get_monster_image(self.game_state["active_monster_pack"][1])
+        self.monster2_image_label.config(image=monster2_image)
+        self.update_status_labels()
+
+    def show_monster_hp_changed(self, monster:Monster, hp_diff):
+        status_label = self.get_monster_status_label(monster)
+        status_label.config(text=f"{'%+d' % hp_diff}")
+
+        self.update_monster_health_label(monster)
+
+        time.sleep(0.5)
+        status_label.config(text="")
+
+    def show_updated_log(self):
         # update log panel
         log_content = ""
         for log in self.game_state.get("game_log"):
@@ -215,13 +234,29 @@ class Screen:
         self.log_panel.insert(INSERT, log_content)
         self.log_panel.configure(state ='disabled')
         self.log_panel.see("end")
-        # update monster images
-        monster1_image = self.get_monster_image(self.game_state["active_monster_pack"][0])
-        self.monster1_image_label.config(image=monster1_image)
 
-        monster2_image = self.get_monster_image(self.game_state["active_monster_pack"][1])
-        self.monster2_image_label.config(image=monster2_image)
-        self.update_status_labels()
+    def update_monster_health_label(self, monster):
+        monster_text = self.get_monster_text(monster)
+        self.get_monster_health_label(monster).config(text=monster_text, font=("Arial", 14))
+
+    def on_hero_armor_changed(self, armor_diff):
+        self.hero_status.config(text=f"Armor {'%+d' % armor_diff}")
+
+        hero_text = self.get_hero_text()
+        self.hero_health_label.config(text=hero_text,font=("Arial", 14))
+        time.sleep(0.5)
+        self.hero_status.config(text="")
+
+    def show_hero_hp_changed(self, hp_diff):
+        if hp_diff == 0:
+            self.hero_status.config(text=f"Blocked")
+        else:
+            self.hero_status.config(text=f"{'%+d' % hp_diff}")
+
+        hero_text = self.get_hero_text()
+        self.hero_health_label.config(text=hero_text,font=("Arial", 14))
+        time.sleep(0.5)
+        self.hero_status.config(text="")
 
     def update_status_labels(self):
         self.clear_statuses()
@@ -272,3 +307,28 @@ class Screen:
 
     def get_active_monster_pack(self):
         return self.game_state["active_monster_pack"]
+
+    def show_hero_attacks(self):
+        # hero status label set 'Attack'
+        self.hero_status.config(text="Attack")
+        time.sleep(0.5)
+        self.hero_status.config(text="")
+
+    def show_monster_attacks(self, monster:Monster):
+        status_label = self.get_monster_status_label(monster)
+        status_label.config(text="Attack")
+        time.sleep(0.5)
+        status_label.config(text="")
+        time.sleep(0.1)
+
+    def get_monster_health_label(self, monster):
+        if self.game_state['active_monster_pack'][0] == monster:
+            return self.monster_1_health_label
+        else:
+            return self.monster_2_health_label
+
+    def get_monster_status_label(self, monster):
+        if self.game_state['active_monster_pack'][0] == monster:
+            return self.monster1_status
+        else:
+            return self.monster2_status

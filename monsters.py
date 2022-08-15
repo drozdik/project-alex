@@ -9,6 +9,10 @@ class Monster:
     clazz = "Skeleton"
     min_damage = 3
     max_damage = 15
+
+    def __init__(self, screenHolder):
+        self.screenHolder = screenHolder
+
     def alive(self):
         return self.hp > 0
 
@@ -41,11 +45,11 @@ class Skeleton(Monster):
     clazz = "Skeleton"
     min_damage = 3
     max_damage = 15
-    
+
     def special(self, game_state):
-        print("Skeleton special")
         game_state["hero_armor"]= game_state["hero_armor"] - 2
-    
+        self.screenHolder["screen"].on_hero_armor_changed(-2) # should be called from Hero class
+
 
 class SkeletonMage(Monster):
     max_hp = 10

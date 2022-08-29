@@ -1,2 +1,1 @@
-it's difficult to test Skeleton when it's calling screen methods directly
-continue with testing Skeleton features (abstract class testing not advised, but?)
+introduced EventListener and fixed test let's continue with tests for Skeleton

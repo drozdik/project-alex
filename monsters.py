@@ -12,8 +12,12 @@ class Monster:
     min_damage = 3
     max_damage = 15
 
-    def __init__(self, screenHolder):
+    # def __init__(self, screenHolder):
+    #     self.screenHolder = screenHolder
+
+    def __init__(self, screenHolder, event_listener: GameEventsListener):
         self.screenHolder = screenHolder
+        self.event_listener = event_listener
 
     def alive(self):
         return self.hp > 0
@@ -25,6 +29,9 @@ class Monster:
         effective_damage = damage - self.armor
         if effective_damage > 0:
             self.hp = self.hp - effective_damage
+            self.event_listener.push_event({"type": "monster_hp_changed", "value": -1, "monster": self})
+        else:
+            self.event_listener.push_event({"type": "monster_blocked", "monster": self})
         return (damage, effective_damage)
 
     def deal_damage(self, calc_damage, game_state):
@@ -49,8 +56,7 @@ class Skeleton(Monster):
     max_damage = 15
 
     def __init__(self, screenHolder, event_listener: GameEventsListener):
-        Monster.__init__(self, screenHolder)
-        self.event_listener = event_listener
+        Monster.__init__(self, screenHolder, event_listener)
 
     def special(self, game_state):
         game_state["hero_armor"] = game_state["hero_armor"] - 2

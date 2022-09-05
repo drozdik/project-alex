@@ -52,7 +52,7 @@ def new_game_state():
         "healing_potions": 5,
         "monster_packs": create_monster_packs(),
         "active_monster_pack_index": 0,
-        "active_monster_pack": [Monster(screenHolder), Monster(screenHolder)],
+        "active_monster_pack": [Monster(screenHolder, event_listener), Monster(screenHolder, event_listener)],
         "game_log": [],
         "hero_dead": False,
         "monsters_dead": False
@@ -85,11 +85,11 @@ def create_monster_packs() -> List[Monster]:
 
 
 def new_skeleton_mage():
-    return SkeletonMage(screenHolder)
+    return SkeletonMage(screenHolder, event_listener)
 
 
 def new_skeleton_lich():
-    return SkeletonLich(screenHolder)
+    return SkeletonLich(screenHolder, event_listener)
 
 
 turn = 1
@@ -328,10 +328,10 @@ def hero_attacks_monster(monster: Monster):
     damages = monster.take_damage(damage)
     append_damage_log("Hero", damages[0], damages[1])
     effective_damage = damages[1]
-    if effective_damage > 0:
-        get_screen().show_monster_hp_changed(monster, 0 - effective_damage)  # view processing monster_hp_changed
-    else:
-        get_screen().show_monster_blocked(monster)
+    # if effective_damage > 0:
+    #     get_screen().show_monster_hp_changed(monster, 0 - effective_damage)  # view processing monster_hp_changed
+    # else:
+    #     get_screen().show_monster_blocked(monster)
 
 
 def append_damage_log(attacker, damage, effective_damage):

@@ -29,7 +29,7 @@ def new_game_state():
 class TestUser(unittest.TestCase):
     screen_holder = {}
 
-    def test_skeleton_special_ability_decrease_hero_armor(self):
+    def test_skeleton_special_ability_decreases_hero_armor(self):
         # given
         initial_hero_armor = 10
         game_state = new_game_state()
@@ -43,15 +43,30 @@ class TestUser(unittest.TestCase):
         # then
         message = f"Expect initial armor {initial_hero_armor} decreased by 2"
         self.assertEqual(game_state["hero_armor"], initial_hero_armor - 2, message)
+        self.assertIn({"type": "hero_armor_changed", "value": -2}, events_listener.events)
 
     def test_skeleton_hp_same_when_damage_less_or_equal_to_armor(self):
         events_listener = TestGameEventsListener()
         skeleton = Skeleton(self.screen_holder, events_listener)
         initial_hp = skeleton.hp
+
         skeleton.take_damage(skeleton.armor - 1)
         skeleton.take_damage(skeleton.armor)
+
         message = f"Expect initial hp {initial_hp} stays same"
         self.assertEqual(skeleton.hp, initial_hp, message)
+        self.assertIn({"type": "monster_blocked", "monster": skeleton}, events_listener.events)
+
+    def test_skeleton_hp_decreased_on_attack_passing_armor(self):
+        events_listener = TestGameEventsListener()
+        skeleton = Skeleton(self.screen_holder, events_listener)
+        initial_hp = skeleton.hp
+
+        skeleton.take_damage(skeleton.armor + 1)
+
+        message = f"Expect initial hp {initial_hp} decreased by 1"
+        self.assertEqual(skeleton.hp, initial_hp - 1, message)
+        self.assertIn({"type": "monster_hp_changed", "value": -1, "monster": skeleton}, events_listener.events)
 
 
 if __name__ == '__main__':

@@ -9,6 +9,8 @@ class GameEventsListener:
             self.get_screen().show_monster_blocked(event["monster"])
         elif event["type"] == "monster_hp_changed":
             self.get_screen().show_monster_hp_changed(event["monster"], event["value"])
+        elif event["type"] == "hero_max_damage_changed":
+            self.get_screen().show_hero_max_damage_changed(event["value"])
         else:
             raise Exception("Unknown type of event", event)
 

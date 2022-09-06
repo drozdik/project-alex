@@ -26,7 +26,7 @@ def new_game_state():
     return state
 
 
-class TestUser(unittest.TestCase):
+class TestSkeleton(unittest.TestCase):
     screen_holder = {}
 
     def test_skeleton_special_ability_decreases_hero_armor(self):

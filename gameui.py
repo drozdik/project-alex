@@ -234,6 +234,12 @@ class Screen:
         time.sleep(0.5)
         self.hero_status.config(text="")
 
+    def show_hero_max_damage_changed(self, diff):
+        self.hero_status.config(text=f"{'%+d' % diff} Max damage", font="Arial 14 bold", fg='pink')
+        self.update_hero_text()
+        time.sleep(0.5)
+        self.hero_status.config(text="")
+
 
     def draw_health_panels(self):
         self.hero_health_label = Label(self.frame,

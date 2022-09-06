@@ -79,9 +79,18 @@ class SkeletonMage(Monster):
 
     def special(self, game_state):
         print("SkeletonMAge special")
+        prev_max_damage = game_state["hero_max_damage"]
         game_state["hero_max_damage"] = game_state["hero_max_damage"] - 5
         if game_state["hero_max_damage"] <= game_state["hero_min_damage"]:
             game_state["hero_max_damage"] = game_state["hero_min_damage"]
+        damage_diff = game_state["hero_max_damage"] - prev_max_damage
+        if damage_diff == 0:
+            return
+        self.event_listener.push_event({
+            "type": "hero_max_damage_changed",
+            "value": damage_diff,
+            "hero": game_state
+        })
 
 
 class SkeletonLich(Monster):

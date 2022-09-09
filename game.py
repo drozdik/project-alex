@@ -4,13 +4,15 @@ from queue import Queue
 from random import randint
 from typing import List
 
-from game_events_listener import GameEventsListener
-from monsters import Monster, Skeleton, SkeletonLich, SkeletonMage
+from game_events import GameEventsListener, TestGameEventsListener
 from gameui import Screen
+from heroes import Hero
+from monsters import Monster, Skeleton, SkeletonLich, SkeletonMage
 
 screen = None
 screenHolder = {"screen": screen}
 event_listener = GameEventsListener(screenHolder)
+
 
 def calc_damage(min_damage, max_damage):
     damage = randint(min_damage, max_damage)
@@ -40,21 +42,11 @@ def calc_heal():
 
 def new_game_state():
     state = {
-        "hero_stuned_rounds": 0,
-        "hero_max_hp": 100,
-        "hero_hp": 100,
-        "hero_min_damage": 3,
-        "hero_max_damage": 20,
-        "hero_base_max_damage": 20,
-        "hero_armor": 0,
-        "hero_base_armor": 10,
-        "hero_in_block": False,
-        "healing_potions": 5,
+        "hero": Hero(TestGameEventsListener()),
         "monster_packs": create_monster_packs(),
         "active_monster_pack_index": 0,
         "active_monster_pack": [Monster(screenHolder, event_listener), Monster(screenHolder, event_listener)],
         "game_log": [],
-        "hero_dead": False,
         "monsters_dead": False
     }
     state["active_monster_pack"] = state["monster_packs"][state["active_monster_pack_index"]]
@@ -111,6 +103,10 @@ def add_healing_potions(count):
     game_state["healing_potions"] = game_state["healing_potions"] + count
 
 
+def get_hero() -> Hero:
+    return game_state["hero"]
+
+
 def fortune_rest():
     rest = randint(1, 100)
     if rest <= 60:
@@ -123,23 +119,23 @@ def fortune_rest():
         use_heal()
         game_state.get("game_log").append("Fortune:20% luck")
     if rest >= 70 and rest <= 75:
-        game_state["hero_hp"] = game_state["hero_max_hp"]
-        game_state["hero_max_damage"] = game_state["hero_base_max_damage"]
+        get_hero().set_max_hp()
+        get_hero().set_max_damage_to_base_max()
         game_state.get("game_log").append("Fortune:5% luck")
 
 
 def power_increase():
     hero_power_icrease = randint(1, 100)
     if hero_power_icrease <= 50:
-        game_state["hero_base_max_damage"] = game_state["hero_base_max_damage"] + 1
-        game_state["hero_min_damage"] = game_state["hero_min_damage"] + 1
+        get_hero().increase_base_max_damage_by(1)
+        get_hero().increase_base_min_damage_by(1)
     if hero_power_icrease >= 95:
-        game_state["hero_base_max_damage"] = game_state["hero_base_max_damage"] + 2
-        game_state["hero_min_damage"] = game_state["hero_min_damage"] + 2
+        get_hero().increase_base_max_damage_by(2)
+        get_hero().increase_base_min_damage_by(2)
 
 
 def hero_rest():
-    game_state["hero_armor"] = game_state["hero_base_armor"]
+    get_hero().set_armor_to_base()
     power_increase()
     fortune_rest()
 
@@ -152,7 +148,7 @@ def pack_is_dead():
 
 
 def hero_is_dead():
-    return game_state["hero_hp"] <= 0
+    return get_hero().is_dead()
 
 
 def all_packs_are_dead():
@@ -164,36 +160,21 @@ def last_pack_active():
 
 
 def damage_restore():
-    if game_state["hero_max_damage"] >= game_state["hero_base_max_damage"]:
-        game_state["hero_max_damage"] = game_state["hero_base_max_damage"]
+    if get_hero().max_damage >= get_hero().base_max_damage:
+        get_hero().set_max_damage_to_base_max()
         game_state.get("game_log").append("Restored max damage")
 
 
-def armor_restore():
-    if game_state["hero_armor"] >= game_state["hero_base_armor"]:
-        change_hero_armor(game_state["hero_base_armor"])
-        game_state.get("game_log").append("Restored armor")
-
-
 def max_hp_heal():
-    if game_state["hero_hp"] >= game_state["hero_max_hp"]:
-        game_state["hero_hp"] = game_state["hero_max_hp"]
-        game_state.get("game_log").append("Healed to max HP")
+    get_hero().set_max_hp()
 
 
 def hero_restore():
     health_points = calc_heal()
-    game_state.get("game_log").append(f"Healing {health_points}")
-    game_state["hero_hp"] = game_state["hero_hp"] + health_points
-    game_state["hero_max_damage"] = game_state["hero_max_damage"] + 4
-    game_state["hero_armor"] = game_state["hero_armor"] * 2
-
-
-def change_hero_hp(hp_diff):
-    if game_state["hero_hp"] + hp_diff > game_state["hero_max_hp"]:
-        hp_diff = game_state["hero_max_hp"] - game_state["hero_hp"]
-    game_state["hero_hp"] += hp_diff
-    screenHolder["screen"].show_hero_hp_changed(hp_diff)
+    get_hero().change_hp(health_points)
+    get_hero().increase_max_damage_by(4)
+    get_hero().change_max_damage(+4)
+    get_hero().change_armor(get_hero().armor * 2)
 
 
 def use_heal():
@@ -201,7 +182,8 @@ def use_heal():
         raise Exception("No healing potions")
     game_state['healing_potions'] -= 1
     get_screen().show_number_of_health_potions_changed(-1)
-    change_hero_hp(calc_heal())
+    diff = calc_heal()
+    get_hero().change_hp(diff)
     # if hero_is_stunned():
     #     game_state["hero_stuned_rounds"] = 0
     #     double_hero_armor()
@@ -212,14 +194,9 @@ def use_heal():
     # armor_restore()
 
 
-def change_hero_armor(armor):
-    prev_armor = game_state["hero_armor"]
-    game_state["hero_armor"] = armor
-    get_screen().show_hero_armor_changed(armor - prev_armor)
-
-
 def double_hero_armor():
-    change_hero_armor(game_state["hero_armor"] * 2)
+    armor = game_state["hero_armor"] * 2
+    get_hero().change_armor(armor)
 
 
 def get_screen() -> Screen:

@@ -1,3 +1,4 @@
+
 class GameEventsListener:
     def __init__(self, screenHolder):
         self.screenHolder = screenHolder
@@ -11,6 +12,8 @@ class GameEventsListener:
             self.get_screen().show_monster_hp_changed(event["monster"], event["value"])
         elif event["type"] == "hero_max_damage_changed":
             self.get_screen().show_hero_max_damage_changed(event["value"])
+        elif event["type"] == "hero_armor_changed":
+            self.get_screen().show_hero_armor_changed(event["value"])
         else:
             raise Exception("Unknown type of event", event)
 

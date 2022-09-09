@@ -1,1 +1,1 @@
-introduced EventListener and fixed test let's continue with tests for Skeleton
+change_hero_armor << refactor next to use Hero functions

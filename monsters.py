@@ -1,6 +1,6 @@
 from random import randint
 
-from game_events_listener import GameEventsListener
+from game_events import GameEventsListener
 
 
 class Monster:

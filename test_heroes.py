@@ -1,4 +1,5 @@
 import unittest
+from unittest import TestCase
 
 from game_events import TestGameEventsListener
 from heroes import Hero
@@ -218,3 +219,17 @@ class TestHero(unittest.TestCase):
         # then
         self.assertEqual(0, hero.max_damage, f"Expect max damage to be 0")
         self.assertIn({"type": "hero_max_damage_changed", "value": -10, "hero": hero}, events.events)
+
+    def test_use_healing_potion(self):
+        events = TestGameEventsListener()
+        hero = Hero(events)
+        hero.healing_potions = 3
+        hero.hp = 10
+
+        hero.use_healing_potion()
+
+        self.assertEqual(2, hero.healing_potions, f"Expect number of healing potions to be 2")
+        self.assertGreater(hero.hp, 10, f"Expect hp greater than 10")
+        event_types = [event["type"] for event in events.events]
+        self.assertIn("hero_hp_changed", event_types)
+        self.assertIn("hero_health_potion_used", event_types)

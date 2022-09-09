@@ -111,12 +111,12 @@ def fortune_rest():
     rest = randint(1, 100)
     if rest <= 60:
         add_healing_potions(1)
-        use_heal()
+        get_hero().use_healing_poiton()
         game_state.get("game_log").append("Fortune:60% luck")
     if rest >= 80:
         add_healing_potions(2)
-        use_heal()
-        use_heal()
+        get_hero().use_healing_poiton()
+        get_hero().use_healing_poiton()
         game_state.get("game_log").append("Fortune:20% luck")
     if rest >= 70 and rest <= 75:
         get_hero().set_max_hp()
@@ -177,23 +177,6 @@ def hero_restore():
     get_hero().change_armor(get_hero().armor * 2)
 
 
-def use_heal():
-    if (game_state["healing_potions"] <= 0):
-        raise Exception("No healing potions")
-    game_state['healing_potions'] -= 1
-    get_screen().show_number_of_health_potions_changed(-1)
-    diff = calc_heal()
-    get_hero().change_hp(diff)
-    # if hero_is_stunned():
-    #     game_state["hero_stuned_rounds"] = 0
-    #     double_hero_armor()
-    #     game_state["hero_max_damage"] = game_state["hero_max_damage"] * 2
-    # hero_restore()
-    # damage_restore()
-    # max_hp_heal()
-    # armor_restore()
-
-
 def double_hero_armor():
     armor = game_state["hero_armor"] * 2
     get_hero().change_armor(armor)
@@ -204,7 +187,7 @@ def get_screen() -> Screen:
 
 
 def use_heal_inside():
-    use_heal()
+    get_hero().use_healing_poiton()
 
 
 def use_precision_strike_inside():

@@ -14,6 +14,8 @@ class GameEventsListener:
             self.get_screen().show_hero_max_damage_changed(event["value"])
         elif event["type"] == "hero_armor_changed":
             self.get_screen().show_hero_armor_changed(event["value"])
+        elif event["type"] == "hero_potions_number_changed":
+            self.get_screen().show_number_of_health_potions_changed(event["value"])
         else:
             raise Exception("Unknown type of event", event)
 

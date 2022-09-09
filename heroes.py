@@ -58,3 +58,26 @@ class Hero:
         self.max_damage = max(0, self.max_damage + diff)
         self.event_listener.push_event(
             {"type": "hero_max_damage_changed", "value": self.max_damage - prev, "hero": self})
+
+    def use_healing_potion(self):
+        self.healing_potions -= 1
+        self.hp += 5
+        self.event_listener.push_event({"type": "hero_hp_changed", "value": +5, "hero": self})
+        self.event_listener.push_event({"type": "hero_health_potion_used"})
+
+        # if (game_state["healing_potions"] <= 0):
+        #         raise Exception("No healing potions")
+        # game_state['healing_potions'] -= 1
+        # # get_screen().show_number_of_health_potions_changed(-1)
+        # diff = calc_heal()
+        # get_hero().change_hp(diff)
+        # # if hero_is_stunned():
+        # #     game_state["hero_stuned_rounds"] = 0
+        # #     double_hero_armor()
+        # #     game_state["hero_max_damage"] = game_state["hero_max_damage"] * 2
+        # # hero_restore()
+        # # damage_restore()
+        # # max_hp_heal()
+        # # armor_restore()
+        #
+        pass

@@ -15,8 +15,7 @@ class Monster:
     # def __init__(self, screenHolder):
     #     self.screenHolder = screenHolder
 
-    def __init__(self, screenHolder, event_listener: GameEventsListener):
-        self.screenHolder = screenHolder
+    def __init__(self, event_listener: GameEventsListener):
         self.event_listener = event_listener
 
     def alive(self):
@@ -45,6 +44,24 @@ class Monster:
     def special(self, game_state):
         pass
 
+    def attack(self, param):
+        #     time.sleep(0.2)
+        # get_screen().show_monster_attacks(monster)
+        # print(f'outside screen is {screen}')
+        # damages = monster.deal_damage(calc_damage, game_state)
+        # append_damage_log("Monster", damages[0], damages[1])
+        # effective_damage = damages[1]
+        # if effective_damage > 0:
+        #     get_screen().show_hero_hp_changed(min(0, 0 - effective_damage))
+        # else:
+        #     get_screen().show_hero_blocked()
+        #     pass
+        #
+        print('monster attack is not implemented')
+
+    def change_health(self, diff):
+        self.hp = max(0, self.hp + diff)
+
 
 class Skeleton(Monster):
     max_hp = 3
@@ -55,8 +72,8 @@ class Skeleton(Monster):
     min_damage = 3
     max_damage = 15
 
-    def __init__(self, screenHolder, event_listener: GameEventsListener):
-        Monster.__init__(self, screenHolder, event_listener)
+    def __init__(self, event_listener: GameEventsListener):
+        Monster.__init__(self, event_listener)
 
     def special(self, game_state):
         game_state["hero_armor"] = game_state["hero_armor"] - 2

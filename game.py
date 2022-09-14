@@ -1,390 +1,198 @@
 import threading
-import time
 from queue import Queue
 from random import randint
 from typing import List
 
-from game_events import GameEventsListener, TestGameEventsListener
+from game_events import GameEventsListener
 from gameui import Screen
 from heroes import Hero
 from monsters import Monster, Skeleton, SkeletonLich, SkeletonMage
 
-screen = None
-screenHolder = {"screen": screen}
-event_listener = GameEventsListener(screenHolder)
 
+class Game:
+    def __init__(self, event_listener):
+        self.event_listener = event_listener
+        self.screen = None
+        self.screenHolder = {"screen": self.screen}
+        event_listener = GameEventsListener(self.screenHolder)
+        turn = 1
+        self.game_state = self.new_game_state()
+        self.game_state["active_monster_pack"] = self.game_state["monster_packs"][
+            self.game_state["active_monster_pack_index"]]
 
-def calc_damage(min_damage, max_damage):
-    damage = randint(min_damage, max_damage)
-    luck = roll_dice(20)
-    if luck == 10:
-        damage = damage * 2
-        game_state.get("game_log").append("Critical damage")
-    if luck == 1:
-        damage = min_damage
-        game_state.get("game_log").append("Critical miss")
-    return damage
+    def calc_damage(self, min_damage, max_damage):
+        damage = randint(min_damage, max_damage)
+        luck = self.roll_dice(20)
+        if luck == 10:
+            damage = damage * 2
+            self.game_state.get("game_log").append("Critical damage")
+        if luck == 1:
+            damage = min_damage
+            self.game_state.get("game_log").append("Critical miss")
+        return damage
 
+    def roll_dice(self, sides):
+        result = randint(1, sides)
+        return result
 
-def roll_dice(sides):
-    result = randint(1, sides)
-    return result
+    def calc_heal(self):
+        health_points = randint(20, 40)
+        luck = self.roll_dice(10)
+        if luck == 10:
+            self.game_state.get("game_log").append("God loves you")
+            health_points = health_points * 2
+        return health_points
 
+    def new_game_state(self):
+        state = {
+            "hero": Hero(self.event_listener),
+            "monster_packs": self.create_monster_packs(),
+            "active_monster_pack_index": 0,
+            "active_monster_pack": [Monster(self.screenHolder, self.event_listener),
+                                    Monster(self.screenHolder, self.event_listener)],
+            "game_log": [],
+            "monsters_dead": False
+        }
+        state["active_monster_pack"] = state["monster_packs"][state["active_monster_pack_index"]]
+        return state
 
-def calc_heal():
-    health_points = randint(20, 40)
-    luck = roll_dice(10)
-    if luck == 10:
-        game_state.get("game_log").append("God loves you")
-        health_points = health_points * 2
-    return health_points
-
-
-def new_game_state():
-    state = {
-        "hero": Hero(TestGameEventsListener()),
-        "monster_packs": create_monster_packs(),
-        "active_monster_pack_index": 0,
-        "active_monster_pack": [Monster(screenHolder, event_listener), Monster(screenHolder, event_listener)],
-        "game_log": [],
-        "monsters_dead": False
-    }
-    state["active_monster_pack"] = state["monster_packs"][state["active_monster_pack_index"]]
-    return state
-
-
-def new_skeleton():
-    return Skeleton(screenHolder, event_listener)
-
-
-def create_monster_packs() -> List[Monster]:
-    packs = []
-    for i in range(3):
-        pack = [new_skeleton(), new_skeleton()]
-        mage_chance = randint(1, 100)
-        if (mage_chance < 20):
-            pack[1] = new_skeleton_mage()
+    def create_monster_packs(self) -> List[Monster]:
+        packs = []
+        for i in range(3):
+            pack = [Skeleton(self.screenHolder, self.event_listener), Skeleton(self.screenHolder, self.event_listener)]
             mage_chance = randint(1, 100)
-            if (mage_chance < 10):
-                pack[0] = new_skeleton_mage()
-        lich_chance = randint(1, 100)
-        if (lich_chance < (0 + i * 10)):
-            pack = [new_skeleton(), new_skeleton_lich()]
+            if mage_chance < 20:
+                pack[1] = SkeletonMage(self.screenHolder, self.event_listener)
+                mage_chance = randint(1, 100)
+                if mage_chance < 10:
+                    pack[0] = SkeletonMage(self.screenHolder, self.event_listener)
+            lich_chance = randint(1, 100)
+            if lich_chance < (0 + i * 10):
+                pack = [Skeleton(self.screenHolder, self.event_listener),
+                        SkeletonLich(self.screenHolder, self.event_listener)]
+                packs.append(pack)
+                break
             packs.append(pack)
-            break
-        packs.append(pack)
-    return packs
-
-
-def new_skeleton_mage():
-    return SkeletonMage(screenHolder, event_listener)
-
-
-def new_skeleton_lich():
-    return SkeletonLich(screenHolder, event_listener)
-
-
-turn = 1
-
-game_state = new_game_state()
-
-game_state["active_monster_pack"] = game_state["monster_packs"][game_state["active_monster_pack_index"]]
-
-
-def switch_to_next_monster_pack():
-    print('switching to next monster pack')
-    game_state["active_monster_pack_index"] += 1
-    game_state["active_monster_pack"] = game_state["monster_packs"][game_state["active_monster_pack_index"]]
-    get_screen().show_new_monsters_pack()
-    game_state.get("game_log").append("\nNew monsters arrived\n")
-
-
-def add_healing_potions(count):
-    game_state["healing_potions"] = game_state["healing_potions"] + count
-
-
-def get_hero() -> Hero:
-    return game_state["hero"]
-
-
-def fortune_rest():
-    rest = randint(1, 100)
-    if rest <= 60:
-        add_healing_potions(1)
-        get_hero().use_healing_poiton()
-        game_state.get("game_log").append("Fortune:60% luck")
-    if rest >= 80:
-        add_healing_potions(2)
-        get_hero().use_healing_poiton()
-        get_hero().use_healing_poiton()
-        game_state.get("game_log").append("Fortune:20% luck")
-    if rest >= 70 and rest <= 75:
-        get_hero().set_max_hp()
-        get_hero().set_max_damage_to_base_max()
-        game_state.get("game_log").append("Fortune:5% luck")
-
-
-def power_increase():
-    hero_power_icrease = randint(1, 100)
-    if hero_power_icrease <= 50:
-        get_hero().increase_base_max_damage_by(1)
-        get_hero().increase_base_min_damage_by(1)
-    if hero_power_icrease >= 95:
-        get_hero().increase_base_max_damage_by(2)
-        get_hero().increase_base_min_damage_by(2)
-
-
-def hero_rest():
-    get_hero().set_armor_to_base()
-    power_increase()
-    fortune_rest()
-
-
-def pack_is_dead():
-    for monster in get_active_monster_pack():
-        if monster.alive():
-            return False
-    return True
-
-
-def hero_is_dead():
-    return get_hero().is_dead()
-
-
-def all_packs_are_dead():
-    return game_state["active_monster_pack_index"] == len(game_state["monster_packs"])
-
-
-def last_pack_active():
-    return game_state["active_monster_pack_index"] == len(game_state["monster_packs"]) - 1
-
-
-def damage_restore():
-    if get_hero().max_damage >= get_hero().base_max_damage:
-        get_hero().set_max_damage_to_base_max()
-        game_state.get("game_log").append("Restored max damage")
-
-
-def max_hp_heal():
-    get_hero().set_max_hp()
-
-
-def hero_restore():
-    health_points = calc_heal()
-    get_hero().change_hp(health_points)
-    get_hero().increase_max_damage_by(4)
-    get_hero().change_max_damage(+4)
-    get_hero().change_armor(get_hero().armor * 2)
-
-
-def double_hero_armor():
-    armor = game_state["hero_armor"] * 2
-    get_hero().change_armor(armor)
-
-
-def get_screen() -> Screen:
-    return screenHolder["screen"]
-
-
-def use_heal_inside():
-    get_hero().use_healing_poiton()
-
-
-def use_precision_strike_inside():
-    monster = get_first_alive_monster()
-    get_screen().show_hero_attacks()
-    damage = calc_damage(game_state["hero_min_damage"], game_state["hero_max_damage"]) + 5
-    monster.hp = monster.hp - damage  # ignores monster's armor
-    game_state["hero_hp"] = game_state["hero_hp"] - 1  # lose one hp as 'payment'
-    append_damage_log("Hero", damage, damage)
-    get_screen().show_hero_hp_changed(-1)
-    get_screen().show_monster_hp_changed(monster, 0 - damage)  # view processing monster_hp_changed
-    after_hero_turn()
-
-
-def use_aoe_strike_inside():
-    damage = calc_damage(game_state["hero_min_damage"], game_state["hero_max_damage"]) - 1
-    get_screen().show_hero_attacks()
-    for monster in get_active_monster_pack():
-        effective_damage = damage - monster.armor
-        if effective_damage > 0:
-            monster.hp = monster.hp - effective_damage
-            get_screen().show_monster_hp_changed(monster, 0 - effective_damage)  # view processing monster_hp_changed
-        else:
-            get_screen().show_monster_blocked(monster)
-        append_damage_log("Hero", damage, effective_damage)
-    after_hero_turn()
-
-
-def use_combo_strike_inside():
-    monster = get_first_alive_monster()
-    hero_attacks_monster(monster)
-    hero_attacks_monster(monster)
-    game_state["hero_armor"] = game_state["hero_armor"] - 5
-    after_hero_turn()
-
-
-def use_block_inside():
-    game_state["hero_in_block"] = True
-    game_state["hero_armor"] = game_state["hero_armor"] + 15
-    get_screen().show_hero_armor_changed(+15)
-    after_hero_turn()
-
-
-def attack_first_alive_monster():
-    monster = get_first_alive_monster()
-    hero_attacks_monster(monster)
-
-
-def get_active_monster_pack() -> List[Monster]:
-    return game_state["active_monster_pack"]
-
-
-def get_first_alive_monster():
-    for monster in get_active_monster_pack():
-        if monster.alive():
-            return monster
-
-
-def lich_stun():
-    if not hero_is_stunned():
-        game_state["hero_armor"] = game_state["hero_armor"] / 2
-        game_state["hero_max_damage"] = int(game_state["hero_max_damage"] / 2)
-    game_state["hero_stuned_rounds"] = game_state["hero_stuned_rounds"] + 3
-
-
-def hero_is_stunned():
-    return game_state["hero_stuned_rounds"] > 0
-
-
-def monsters_turn_end():
-    if hero_is_stunned():
-        game_state["hero_stuned_rounds"] = game_state["hero_stuned_rounds"] - 1
-        if not hero_is_stunned():
-            print("restore damage and armor")
-            game_state["hero_armor"] = game_state["hero_armor"] * 2
-            game_state["hero_max_damage"] = game_state["hero_max_damage"] * 2
-    if game_state["hero_in_block"]:
-        game_state["hero_in_block"] = False
-        game_state["hero_armor"] = game_state["hero_base_armor"]
-
-
-def monster_attacks_hero(monster: Monster):
-    time.sleep(0.2)
-    get_screen().show_monster_attacks(monster)
-    print(f'outside screen is {screen}')
-    damages = monster.deal_damage(calc_damage, game_state)
-    append_damage_log("Monster", damages[0], damages[1])
-    effective_damage = damages[1]
-    if effective_damage > 0:
-        get_screen().show_hero_hp_changed(min(0, 0 - effective_damage))
-    else:
-        get_screen().show_hero_blocked()
-
-
-def hero_attacks_monster(monster: Monster):
-    get_screen().show_hero_attacks()  # view processing hero_attacked event
-    damage = calc_damage(game_state["hero_min_damage"], game_state["hero_max_damage"])
-    damages = monster.take_damage(damage)
-    append_damage_log("Hero", damages[0], damages[1])
-    effective_damage = damages[1]
-    # if effective_damage > 0:
-    #     get_screen().show_monster_hp_changed(monster, 0 - effective_damage)  # view processing monster_hp_changed
-    # else:
-    #     get_screen().show_monster_blocked(monster)
-
-
-def append_damage_log(attacker, damage, effective_damage):
-    if (effective_damage <= 0):
-        game_state.get("game_log").append(f"{attacker} hit {damage} damage, all absorbed")
-    else:
-        game_state.get("game_log").append(f"{attacker} hit {damage} damage, {effective_damage} passes armor")
-    get_screen().show_updated_log()
-
-
-def ask_for_hero_action():
-    return input("Press any key or Q to end the programm. Press H to heal and hit")
-
-
-def ask_for_monster_turn():
-    return input("Press any key for monster turn ")
-
-
-def hero_turn():
-    return turn % 2 == 1
-
-
-# let's make this method called from thread when it picks event from queue
-
-
-def hero_attack_inside():
-    attack_first_alive_monster()
-    after_hero_turn()
-
-
-def after_hero_turn():
-    if pack_is_dead():
-        hero_rest()
-        if last_pack_active():
-            get_screen().draw_game_over()
-            game_state["monsters_dead"] = True
-            return
-        switch_to_next_monster_pack()
-        return
-    monster_pack_attack()
-
-
-def monster_pack_attack():
-    for monster in get_active_monster_pack():
-        if monster.alive():
-            monster_attacks_hero(monster)
-            if hero_is_dead():
-                game_state["hero_dead"] = True
+        return packs
+
+    def switch_to_next_monster_pack(self, ):
+        print('switching to next monster pack')
+        self.game_state["active_monster_pack_index"] += 1
+        self.game_state["active_monster_pack"] = self.game_state["monster_packs"][
+            self.game_state["active_monster_pack_index"]]
+        self.get_screen().show_new_monsters_pack()
+        self.game_state.get("game_log").append("\nNew monsters arrived\n")
+
+    def add_healing_potions(self, count):
+        self.game_state["healing_potions"] = self.game_state["healing_potions"] + count
+
+    def get_hero(self, ) -> Hero:
+        return self.game_state["hero"]
+
+    def pack_is_dead(self, ):
+        for monster in self.get_active_monster_pack():
+            if monster.alive():
+                return False
+        return True
+
+    def all_packs_are_dead(self, ):
+        return self.game_state["active_monster_pack_index"] == len(self.game_state["monster_packs"])
+
+    def last_pack_active(self, ):
+        return self.game_state["active_monster_pack_index"] == len(self.game_state["monster_packs"]) - 1
+
+    def get_screen(self, ) -> Screen:
+        return self.screenHolder["screen"]
+
+    def use_heal_inside(self, ):
+        self.get_hero().use_healing_poiton()
+
+    def use_precision_strike_inside(self, ):
+        monster = self.get_first_alive_monster()
+        self.get_hero().use_precision_strike(monster)
+        self.after_hero_turn()
+
+    def use_aoe_strike_inside(self, ):
+        self.get_hero().use_aoe_strike(self.get_active_monster_pack())
+        self.after_hero_turn()
+
+    def use_combo_strike_inside(self, ):
+        monster = self.get_first_alive_monster()
+        self.get_hero().use_combo_strikee(monster)
+        self.after_hero_turn()
+
+    def use_block_inside(self, ):
+        self.get_hero().use_block()
+        self.after_hero_turn()
+
+    def attack_first_alive_monster(self, ):
+        monster = self.get_first_alive_monster()
+        self.get_hero().attack_monster(monster)
+
+    def get_active_monster_pack(self, ) -> List[Monster]:
+        return self.game_state["active_monster_pack"]
+
+    def get_first_alive_monster(self, ):
+        for monster in self.get_active_monster_pack():
+            if monster.alive():
+                return monster
+
+    def monsters_turn_end(self, ):
+        self.get_hero().on_turn_end()
+
+    def hero_attack_inside(self, ):
+        self.attack_first_alive_monster()
+        self.after_hero_turn()
+
+    def after_hero_turn(self, ):
+        if self.pack_is_dead():
+            self.get_hero().hero_rest()
+            if self.last_pack_active():
+                self.get_screen().draw_game_over()
+                self.game_state["monsters_dead"] = True
                 return
-    monsters_turn_end()
+            self.switch_to_next_monster_pack()
+            return
+        self.monster_pack_attack()
 
+    def monster_pack_attack(self, ):
+        for monster in self.get_active_monster_pack():
+            if monster.alive():
+                monster.attack(self.get_hero())
+                if self.get_hero().is_dead():
+                    self.game_state["hero_dead"] = True
+                    return
 
-def game_restart():
-    game_state.update(new_game_state())
+    def game_restart(self, ):
+        self.game_state.update(self.new_game_state())
 
+    def listen(self, ui_events: Queue):
+        self.start_listening(ui_events)
 
-queue = Queue()
-screen = Screen(game_state, queue)
-screenHolder["screen"] = screen
+    def watch_queue(self):
+        print('start watch_queue')
+        while True:
+            if not self.queue.empty():
+                event = self.queue.get()
+                print(f"picked event {event}")
+                if event == "hero_attack":
+                    self.hero_attack_inside()
+                elif event == "hero_heal":
+                    self.use_heal_inside()
+                elif event == "precision_strike":
+                    self.use_precision_strike_inside()
+                elif event == "aoe_strike":
+                    self.use_aoe_strike_inside()
+                elif event == "combo_strike":
+                    self.use_combo_strike_inside()
+                elif event == "block":
+                    self.use_block_inside()
+                elif event == "restart":
+                    self.screen.show_on_restart()
 
+    def start_listening(self, queue: Queue):
+        self.queue = queue
+        queue_watcher = threading.Thread(target=self.watch_queue)
 
-def watch_queue(queue: Queue, hero_attack_inside, use_heal_inside, use_precision_strike_inside, use_aoe_strike_inside,
-                use_combo_strike_inside,
-                use_block_inside,
-                screen: Screen):
-    while True:
-        if not queue.empty():
-            event = queue.get()
-            print(f"picked event {event}")
-            if event == "hero_attack":
-                hero_attack_inside()
-            elif event == "hero_heal":
-                use_heal_inside()
-            elif event == "precision_strike":
-                use_precision_strike_inside()
-            elif event == "aoe_strike":
-                use_aoe_strike_inside()
-            elif event == "combo_strike":
-                use_combo_strike_inside()
-            elif event == "block":
-                use_block_inside()
-            elif event == "restart":
-                screen.show_on_restart()
-
-
-# start queue watcher thread here
-queue_watcher = threading.Thread(target=watch_queue,
-                                 args=[queue, hero_attack_inside, use_heal_inside, use_precision_strike_inside,
-                                       use_aoe_strike_inside,
-                                       use_combo_strike_inside,
-                                       use_block_inside,
-                                       screen])
-queue_watcher.setDaemon(True)
-queue_watcher.start()
-
-screen.start()
+        queue_watcher.setDaemon(True)
+        queue_watcher.start()

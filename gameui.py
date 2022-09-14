@@ -48,6 +48,7 @@ class Screen:
 
     def on_hero_attack_btn_clicked(self):
         # self.hero_attack()  # calls action from the Game
+        print('adding hero_attack into queue')
         self.queue.put("hero_attack")
 
     def on_hero_heal_btn_clicked(self):
@@ -318,3 +319,6 @@ class Screen:
         self.update_monster1_text()
         self.update_monster2_image()
         self.update_monster2_text()
+
+    def listen(self, game_events):
+        pass

@@ -3,6 +3,7 @@ from unittest import TestCase
 
 from game_events import TestGameEventsListener
 from heroes import Hero
+from monsters import Skeleton
 
 
 class TestHero(unittest.TestCase):
@@ -233,3 +234,14 @@ class TestHero(unittest.TestCase):
         event_types = [event["type"] for event in events.events]
         self.assertIn("hero_hp_changed", event_types)
         self.assertIn("hero_health_potion_used", event_types)
+
+    def test_attack_monster(self):
+        events = TestGameEventsListener()
+        hero = Hero(events)
+        monster = Skeleton(events)
+        monster.hp = 5
+        # when
+        hero.attack_monster(monster)
+        # then
+        self.assertEqual(4, monster.hp, f"Expect monster health decrease from 5 to 4")
+        self.assertIn({"type": "hero_attacks", "hero": hero, "monster": monster}, events.events)

@@ -1,1 +1,10 @@
-change_hero_armor << refactor next to use Hero functions
+so...
+we have UI/Screen which adds events into ui_events
+we have game which adds game events
+we have ui events listener which listens and calls methods on game models
+we have 'animator' which listens for game events and changes UI
+
+who depends on what?
+
+UI depends on ui_events_queue
+game models depends on game events queue
